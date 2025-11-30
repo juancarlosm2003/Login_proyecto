@@ -1,0 +1,87 @@
+.root {
+    -fx-background-color: #0F0F16;
+}
+
+.card {
+    -fx-background-color: #12121C;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 30, 0, 0, 10);
+}
+
+.titulo {
+    -fx-text-fill: #E63746;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.subtitulo {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.descripcion {
+    -fx-text-fill: #9B9BA8;
+    -fx-font-size: 13px;
+}
+
+.label {
+    -fx-text-fill: #E5E5F0;
+    -fx-font-size: 13px;
+}
+
+.input {
+    -fx-background-color: #1A1A23;
+    -fx-background-radius: 10;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #5E5E69;
+    -fx-padding: 8 10 8 10;
+    -fx-border-color: transparent;
+}
+
+.input:focused {
+    -fx-border-color: #E63746;
+    -fx-border-width: 1.8;
+}
+
+.combo {
+    -fx-background-color: #1A1A23;
+    -fx-background-radius: 10;
+    -fx-text-fill: white;
+    -fx-padding: 6 10 6 10;
+}
+
+.button-primary {
+    -fx-background-color: #E63746;
+    -fx-text-fill: white;
+    -fx-background-radius: 999;
+    -fx-padding: 8 18 8 18;
+    -fx-font-weight: bold;
+}
+
+.button-primary:hover {
+    -fx-background-color: #ff4f5b;
+}
+
+.button-secondary {
+    -fx-background-color: #2C2C37;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 999;
+    -fx-padding: 8 18 8 18;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #3b3b49;
+}
+
+.mensaje {
+    -fx-font-size: 12px;
+}
+
+.mensaje-error {
+    -fx-text-fill: #ff5555;
+}
+
+.mensaje-ok {
+    -fx-text-fill: #60e760;
+}
