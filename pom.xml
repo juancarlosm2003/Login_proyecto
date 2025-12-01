@@ -2,6 +2,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mycompany</groupId>
@@ -10,23 +11,18 @@
     <packaging>jar</packaging>
 
     <properties>
-        <!-- JDK que estás usando -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-
-        <!-- Versión de JavaFX -->
-        <javafx.version>23.0.1</javafx.version>
+        <javafx.version>21.0.1</javafx.version>
     </properties>
 
     <dependencies>
-        <!-- JavaFX Controls (ventanas, botones, etc.) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- JavaFX FXML (por si luego usas FXML, no estorba) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
@@ -36,27 +32,25 @@
 
     <build>
         <plugins>
-            <!-- Plugin para COMPILAR normalmente -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <release>21</release>
                 </configuration>
             </plugin>
 
-            <!-- Plugin para EJECUTAR JavaFX correctamente -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <!-- Clase principal que extiende Application -->
                     <mainClass>com.mycompany.proyecto_login.Proyecto_Login</mainClass>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 

@@ -1,17 +1,23 @@
 package com.mycompany.proyecto_login;
 
+import static com.mycompany.proyecto_login.Rol.ADMIN;
+import static com.mycompany.proyecto_login.Rol.CAJA;
+import static com.mycompany.proyecto_login.Rol.OPERADOR;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class Proyecto_Login extends Application {
 
     private UserStore userStore = new UserStore();
-
+ 
     @Override
     public void start(Stage stage) {
         stage.setTitle("La Oficina - Sistema");
@@ -30,8 +36,12 @@ public class Proyecto_Login extends Application {
     // -------------------------------------------------------------------------
     private void mostrarPantallaLogin(Stage stage) {
 
-        Label lblTitulo = new Label("LA OFICINA");
-        lblTitulo.getStyleClass().add("titulo");
+Image img = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png")); 
+ImageView imgView = new ImageView(img);
+
+imgView.setFitWidth(200);
+imgView.setPreserveRatio(true);
+imgView.setSmooth(true);
 
         Label lblSub = new Label("Iniciar sesión");
         lblSub.getStyleClass().add("subtitulo");
@@ -66,7 +76,7 @@ public class Proyecto_Login extends Application {
         contBotones.setAlignment(Pos.CENTER_RIGHT);
 
         VBox card = new VBox(15,
-                lblTitulo,
+                imgView,     
                 lblSub,
                 lblDesc,
                 lblUsuario,
@@ -76,6 +86,7 @@ public class Proyecto_Login extends Application {
                 lblMensaje,
                 contBotones
         );
+        
         card.getStyleClass().add("card");
         card.setPadding(new Insets(40));
         card.setMaxWidth(420);
@@ -123,13 +134,15 @@ public class Proyecto_Login extends Application {
         stage.setScene(scene);
     }
 
-    // -------------------------------------------------------------------------
-    // REGISTRO
-    // -------------------------------------------------------------------------
     private void mostrarPantallaRegistro(Stage stage) {
 
-        Label lblTitulo = new Label("LA OFICINA");
-        lblTitulo.getStyleClass().add("titulo");
+        Image img = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
+ImageView imgView = new ImageView(img);
+
+imgView.setFitWidth(200);
+imgView.setPreserveRatio(true);
+imgView.setSmooth(true);
+
 
         Label lblSub = new Label("Crear usuario");
         lblSub.getStyleClass().add("subtitulo");
@@ -179,7 +192,7 @@ public class Proyecto_Login extends Application {
         contBotones.setAlignment(Pos.CENTER_RIGHT);
 
         VBox card = new VBox(15,
-                lblTitulo,
+                imgView,
                 lblSub,
                 lblDesc,
                 lblUsuario,
@@ -280,8 +293,12 @@ public class Proyecto_Login extends Application {
     // -------------------------------------------------------------------------
     private void mostrarPantallaPrincipal(Stage stage, Usuario usuario) {
 
-        Label lblTitulo = new Label("LA OFICINA");
-        lblTitulo.getStyleClass().add("titulo");
+          Image img = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png")); 
+ImageView imgView = new ImageView(img);
+
+imgView.setFitWidth(200);
+imgView.setPreserveRatio(true);
+imgView.setSmooth(true);
 
         Label lblBien = new Label(
                 "Bienvenido, " + usuario.getUsuario() + " (" + usuario.getRol() + ")"
@@ -295,7 +312,7 @@ public class Proyecto_Login extends Application {
         Button btnCerrar = new Button("Cerrar sesión");
         btnCerrar.getStyleClass().add("button-secondary");
 
-        VBox card = new VBox(20, lblTitulo, lblBien, lblInfo, btnCerrar);
+        VBox card = new VBox(20, imgView, lblBien, lblInfo, btnCerrar);
         card.getStyleClass().add("card");
         card.setPadding(new Insets(40));
         card.setMaxWidth(520);
