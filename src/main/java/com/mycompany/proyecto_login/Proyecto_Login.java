@@ -5,6 +5,7 @@ import static com.mycompany.proyecto_login.Rol.CAJA;
 import static com.mycompany.proyecto_login.Rol.OPERADOR;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -91,10 +92,9 @@ public class Proyecto_Login extends Application {
     StackPane.setAlignment(card, Pos.CENTER);
     root.setPadding(new Insets(30));
 
-    Scene scene = new Scene(root, 900, 600);  // tamaño inicial
+    Scene scene = new Scene(root, 900, 600);  // tam inicial
     aplicarCss(scene);
 
-    // Listener para que el card se redimensione pero siempre centrado
     scene.widthProperty().addListener((obs, oldW, newW) -> {
         double ancho = newW.doubleValue() * 0.5;
         if (ancho < 360) ancho = 360;
@@ -102,11 +102,10 @@ public class Proyecto_Login extends Application {
         card.setMaxWidth(ancho);
     });
 
-    // Cada vez que mostramos login, aseguramos tamaño no maximizado
     stage.setMaximized(false);
     stage.setWidth(900);
     stage.setHeight(600);
-    stage.centerOnScreen();  // <<-- esto es clave para que quede centrado
+    stage.centerOnScreen(); 
 
     btnLogin.setOnAction(e -> {
         String user = txtUsuario.getText().trim();
@@ -209,10 +208,9 @@ private void mostrarPantallaRegistro(Stage stage) {
     StackPane.setAlignment(card, Pos.CENTER);
     root.setPadding(new Insets(30));
 
-    Scene scene = new Scene(root, 1000, 700); // tamaño inicial más grande
+    Scene scene = new Scene(root, 1000, 700); 
     aplicarCss(scene);
 
-    // Listener para ancho del card
     scene.widthProperty().addListener((obs, oldW, newW) -> {
         double ancho = newW.doubleValue() * 0.5;
         if (ancho < 400) ancho = 400;
@@ -220,7 +218,6 @@ private void mostrarPantallaRegistro(Stage stage) {
         card.setMaxWidth(ancho);
     });
 
-    // Listener para alto del card
     scene.heightProperty().addListener((obs, oldH, newH) -> {
         double alto = newH.doubleValue() * 0.8;
         if (alto < 500) alto = 500;
@@ -289,33 +286,79 @@ private void mostrarPantallaRol(Stage stage, Usuario usuario) {
 }
 
 private void mostrarAdmin(Stage stage, Usuario usuario) {
+   
+    Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
+    ImageView logoView = new ImageView(logoImg);
+    logoView.setFitWidth(200);
+    logoView.setPreserveRatio(true);
+    logoView.setSmooth(true);
+
+    Label lblUsuario = new Label(usuario.getUsuario());
+    lblUsuario.getStyleClass().add("label"); 
+
+    Image userIcon = new Image(getClass().getResourceAsStream("/imgs/user_icon.png"));
+    ImageView userIconView = new ImageView(userIcon);
+    userIconView.setFitWidth(30);
+    userIconView.setPreserveRatio(true);
+
+    HBox userBox = new HBox(10, lblUsuario, userIconView);
+    userBox.setAlignment(Pos.CENTER_RIGHT);
+
+    HBox topBar = new HBox();
+    topBar.setPadding(new Insets(10, 20, 10, 20));
+    topBar.setSpacing(10);
+    HBox.setHgrow(userBox, Priority.ALWAYS); 
+    topBar.getChildren().addAll(logoView, userBox);
+    topBar.getStyleClass().add("top-bar"); // CSS
+
+    Button btnInicio = new Button("Inicio");
+    Button btnUsuarios = new Button("Usuarios");
+    Button btnReportes = new Button("Reportes");
+    Button btnCerrarNav = new Button("Cerrar sesión");
+    btnCerrarNav.setOnAction(e -> Platform.runLater(() -> mostrarPantallaLogin(stage)));
+
+    HBox navbar = new HBox(20, btnInicio, btnUsuarios, btnReportes, btnCerrarNav);
+    navbar.setAlignment(Pos.CENTER_LEFT);
+    navbar.setPadding(new Insets(10, 20, 10, 20));
+    navbar.getStyleClass().add("navbar");
+    navbar.setMaxWidth(Double.MAX_VALUE); 
+    
+    VBox topContainer = new VBox(topBar, navbar);
+    topContainer.setSpacing(5);
+    topContainer.setPadding(new Insets(0));
+
     Label lbl = new Label("Bienvenido ADMIN");
-        lbl.getStyleClass().add("subtitulo");
+    lbl.getStyleClass().add("subtitulo");
 
-        Label info = new Label("pepeee");
-        info.getStyleClass().add("descripcion");
-        info.setWrapText(true);
+    Label info = new Label("pepeewd");
+    info.getStyleClass().add("descripcion");
+    info.setWrapText(true);
 
-        Button btnCerrar = new Button("Cerrar sesión");
-        btnCerrar.getStyleClass().add("button-secondary");
-        btnCerrar.setOnAction(e -> mostrarPantallaLogin(stage));
+    Button btnCerrarCentral = new Button("Cerrar sesión");
+    btnCerrarCentral.getStyleClass().add("button-secondary");
+    btnCerrarCentral.setOnAction(e -> mostrarPantallaLogin(stage));
 
-        VBox content = new VBox(20, lbl, info, btnCerrar);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(40));
+    VBox panelCentral = new VBox(20, lbl, info, btnCerrarCentral);
+    panelCentral.getStyleClass().add("card");
+    panelCentral.setPadding(new Insets(40));
+    panelCentral.setAlignment(Pos.CENTER);
 
-        StackPane root = new StackPane(content);
-        root.setPadding(new Insets(30));
+    BorderPane root = new BorderPane();
+    root.setTop(topContainer);
+    root.setCenter(panelCentral);
+    root.setPadding(new Insets(20));
 
-        Scene scene = new Scene(root);
-        aplicarCss(scene);
+    Scene scene = new Scene(root, 1200, 800);
+    aplicarCss(scene); 
 
-        stage.setScene(scene);
-        stage.setMaximized(true); 
+    stage.setScene(scene);
+    stage.setMaximized(true); 
+    stage.centerOnScreen();
 }
 
+
 private void mostrarCaja(Stage stage, Usuario usuario) {
-    Label lbl = new Label("Bienvenido CAJITA");
+        Label lbl = new Label("Bienvenido CAJITA");
         lbl.getStyleClass().add("subtitulo");
 
         Label info = new Label("pepeee");

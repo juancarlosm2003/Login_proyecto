@@ -13,6 +13,55 @@
 
 
 }
+.top-bar {
+    -fx-background-color: #12121C;  
+    -fx-padding: 10 20;             
+    -fx-alignment: center-left;
+}
+
+.top-bar .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.navbar {
+    -fx-background-color: #2C2C37; 
+    -fx-padding: 10 20;
+    -fx-spacing: 15;
+    -fx-background-radius: 15;
+}
+
+.navbar Button {
+    -fx-background-color: #2C2C37;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-padding: 6 20;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 3);
+}
+
+.navbar Button:hover {
+    -fx-background-color: #E63746;
+    -fx-text-fill: #FFFFFF;
+}
+
+.button-secondary {
+    -fx-background-color: #2C2C37;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 999;
+    -fx-padding: 8 18;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #3b3b49;
+}
+
+.top-bar ImageView {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);
+}
 
 .subtitulo {
     -fx-text-fill: #FFFFFF;
