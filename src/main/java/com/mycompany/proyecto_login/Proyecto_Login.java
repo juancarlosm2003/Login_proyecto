@@ -8,6 +8,7 @@ import static javafx.application.Application.launch;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -18,6 +19,8 @@ import javafx.stage.Stage;
 public class Proyecto_Login extends Application {
 
     private UserStore userStore = new UserStore();
+     private Usuario usuarioActual;
+    
 
     @Override
     public void start(Stage stage) {
@@ -67,9 +70,10 @@ public class Proyecto_Login extends Application {
     btnLogin.getStyleClass().add("button-primary");
 
     Button btnCrear = new Button("Crear usuario");
+    
     btnCrear.getStyleClass().add("button-secondary");
 
-    HBox contBotones = new HBox(10, btnLogin, btnCrear);
+    HBox contBotones = new HBox(10, btnLogin);
     contBotones.setAlignment(Pos.CENTER_RIGHT);
 
     VBox card = new VBox(15,
@@ -115,19 +119,136 @@ public class Proyecto_Login extends Application {
             lblMensaje.setText("Debes ingresar usuario y contraseña.");
             return;
         }
-        Usuario u = userStore.validarLogin(user, pass);
-        if (u == null) {
+        CasoLogin cas = userStore.validarLogin(user, pass);
+        if (cas == null) {
             lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
             lblMensaje.setText("Usuario o contraseña incorrectos.");
-        } else {
+        } else if (cas.getNum() == 1){
             lblMensaje.setText("");
-            mostrarPantallaRol(stage, u);
+             usuarioActual = cas.getUsuario();
+            mostrarPantallaRol(stage,usuarioActual);
+        }
+        else if(cas.getNum() == 2){
+            usuarioActual = cas.getUsuario();
+            mostrarPantallaContra(stage);
+
+            
         }
     });
 
-    btnCrear.setOnAction(e -> mostrarPantallaRegistro(stage));
     stage.setScene(scene);
 }
+ 
+ private void mostrarPantallaContra(Stage stage) {
+      Image img = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
+        ImageView imgView = new ImageView(img);
+        imgView.setFitWidth(200);
+        imgView.setPreserveRatio(true);
+        imgView.setSmooth(true);
+
+    Label lblSub = new Label("Su usuario fue creado recientemente. \nConfigure su contraseña.");
+    lblSub.getStyleClass().add("subtitulo");
+
+     Label lblPass = new Label("Contraseña");
+    lblPass.getStyleClass().add("label");
+
+    PasswordField txtPass = new PasswordField();
+    txtPass.setPromptText("Mínimo 4 caracteres");
+    txtPass.getStyleClass().add("input");
+
+    Label lblConf = new Label("Confirmar contraseña");
+    lblConf.getStyleClass().add("label");
+
+    PasswordField txtConf = new PasswordField();
+    txtConf.setPromptText("Repite la contraseña");
+    txtConf.getStyleClass().add("input");
+
+    Label lblMensaje = new Label();
+    lblMensaje.getStyleClass().add("mensaje");
+
+    Button btnguardar= new Button("Guardar");
+    btnguardar.getStyleClass().add("button-primary");
+    
+    Button btnVolver = new Button("Volver al login");
+    btnVolver.getStyleClass().add("button-secondary");
+
+    HBox contBotones = new HBox(10, btnguardar,btnVolver);
+    contBotones.setAlignment(Pos.CENTER_RIGHT);
+
+    VBox card = new VBox(15,
+            imgView,
+            lblSub,
+            lblPass,
+            txtPass,
+            lblConf,
+            txtConf,
+            lblMensaje,
+            contBotones
+    );
+    card.getStyleClass().add("card");
+    card.setPadding(new Insets(40));
+    card.setMaxWidth(420);
+
+    StackPane root = new StackPane(card);
+    root.getStyleClass().add("root");
+    StackPane.setAlignment(card, Pos.CENTER);
+    root.setPadding(new Insets(30));
+
+    Scene scene = new Scene(root, 900, 600);  // tam inicial
+    aplicarCss(scene);
+
+    scene.widthProperty().addListener((obs, oldW, newW) -> {
+        double ancho = newW.doubleValue() * 0.5;
+        if (ancho < 360) ancho = 360;
+        if (ancho > 600) ancho = 600;
+        card.setMaxWidth(ancho);
+    });
+
+    stage.setMaximized(false);
+    stage.setWidth(900);
+    stage.setHeight(600);
+    stage.centerOnScreen(); 
+    
+    
+
+    btnguardar.setOnAction(e -> {
+        
+        String pass = txtPass.getText().trim();
+        String conf = txtConf.getText().trim();
+        
+         if (pass.isEmpty() || conf.isEmpty()) {
+            lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
+            lblMensaje.setText("Todos los campos son obligatorios.");
+            return;
+        }
+        if (pass.length() < 4) {
+            lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
+            lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
+            return;
+        }
+        if (!pass.equals(conf)) {
+            lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
+            lblMensaje.setText("Las contraseñas no coinciden.");
+            return;
+        }
+        
+            lblMensaje.getStyleClass().setAll("mensaje", "mensaje-ok");
+            lblMensaje.setText("Contraseña actualizada correctamente. Ahora puedes iniciar sesión.");
+     
+            txtPass.clear();
+            txtConf.clear();
+            
+            userStore.actualizarPassword(usuarioActual.getUsuario(), pass);
+            
+    });
+    
+    btnVolver.setOnAction(e -> {
+mostrarPantallaLogin(stage);
+            });
+    
+
+    stage.setScene(scene);
+ }
 
 private void mostrarPantallaRegistro(Stage stage) {
     Image img = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
@@ -149,20 +270,6 @@ private void mostrarPantallaRegistro(Stage stage) {
     txtUsuario.setPromptText("Ejemplo: juan.caja");
     txtUsuario.getStyleClass().add("input");
 
-    Label lblPass = new Label("Contraseña");
-    lblPass.getStyleClass().add("label");
-
-    PasswordField txtPass = new PasswordField();
-    txtPass.setPromptText("Mínimo 4 caracteres");
-    txtPass.getStyleClass().add("input");
-
-    Label lblConf = new Label("Confirmar contraseña");
-    lblConf.getStyleClass().add("label");
-
-    PasswordField txtConf = new PasswordField();
-    txtConf.setPromptText("Repite la contraseña");
-    txtConf.getStyleClass().add("input");
-
     Label lblRol = new Label("Rol");
     lblRol.getStyleClass().add("label");
 
@@ -177,7 +284,7 @@ private void mostrarPantallaRegistro(Stage stage) {
     Button btnGuardar = new Button("Guardar");
     btnGuardar.getStyleClass().add("button-primary");
 
-    Button btnVolver = new Button("Volver al login");
+    Button btnVolver = new Button("Volver al panel");
     btnVolver.getStyleClass().add("button-secondary");
 
     HBox contBotones = new HBox(10, btnGuardar, btnVolver);
@@ -189,10 +296,6 @@ private void mostrarPantallaRegistro(Stage stage) {
             lblDesc,
             lblUsuario,
             txtUsuario,
-            lblPass,
-            txtPass,
-            lblConf,
-            txtConf,
             lblRol,
             cbRol,
             lblMensaje,
@@ -232,23 +335,11 @@ private void mostrarPantallaRegistro(Stage stage) {
 
     btnGuardar.setOnAction(e -> {
         String user = txtUsuario.getText().trim();
-        String pass = txtPass.getText().trim();
-        String conf = txtConf.getText().trim();
         Rol rol = cbRol.getValue();
 
-        if (user.isEmpty() || pass.isEmpty() || conf.isEmpty()) {
+        if (user.isEmpty()) {
             lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
             lblMensaje.setText("Todos los campos son obligatorios.");
-            return;
-        }
-        if (pass.length() < 4) {
-            lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
-            lblMensaje.setText("La contraseña debe tener al menos 4 caracteres.");
-            return;
-        }
-        if (!pass.equals(conf)) {
-            lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
-            lblMensaje.setText("Las contraseñas no coinciden.");
             return;
         }
         if (userStore.existeUsuario(user)) {
@@ -256,13 +347,12 @@ private void mostrarPantallaRegistro(Stage stage) {
             lblMensaje.setText("El usuario ya existe. Elige otro.");
             return;
         }
+        String pass = "++++";
         boolean ok = userStore.crearUsuario(user, pass, rol);
         if (ok) {
             lblMensaje.getStyleClass().setAll("mensaje", "mensaje-ok");
-            lblMensaje.setText("Usuario creado correctamente. Ahora puedes iniciar sesión.");
+            lblMensaje.setText("Usuario creado correctamente.");
             txtUsuario.clear();
-            txtPass.clear();
-            txtConf.clear();
             cbRol.getSelectionModel().select(Rol.OPERADOR);
         } else {
             lblMensaje.getStyleClass().setAll("mensaje", "mensaje-error");
@@ -270,7 +360,7 @@ private void mostrarPantallaRegistro(Stage stage) {
         }
     });
 
-    btnVolver.setOnAction(e -> mostrarPantallaLogin(stage));
+   btnVolver.setOnAction(e -> mostrarPantallaRol(stage, usuarioActual));
     stage.setScene(scene);
 }
 
@@ -284,64 +374,94 @@ private void mostrarPantallaRol(Stage stage, Usuario usuario) {
         case OPERADOR -> mostrarOperador(stage, usuario);
     }
 }
-
 private void mostrarAdmin(Stage stage, Usuario usuario) {
-   
     Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
     ImageView logoView = new ImageView(logoImg);
     logoView.setFitWidth(200);
     logoView.setPreserveRatio(true);
-    logoView.setSmooth(true);
 
     Label lblUsuario = new Label(usuario.getUsuario());
-    lblUsuario.getStyleClass().add("label"); 
+    lblUsuario.getStyleClass().add("user-label");
 
     Image userIcon = new Image(getClass().getResourceAsStream("/imgs/user_icon.png"));
     ImageView userIconView = new ImageView(userIcon);
-    userIconView.setFitWidth(30);
+    userIconView.setFitWidth(28);
     userIconView.setPreserveRatio(true);
 
-    HBox userBox = new HBox(10, lblUsuario, userIconView);
-    userBox.setAlignment(Pos.CENTER_RIGHT);
+    // usr box
+    HBox userButton = new HBox(8, lblUsuario, userIconView);
+    userButton.setAlignment(Pos.CENTER_RIGHT);
+    userButton.getStyleClass().add("user-button");
+    userButton.setPadding(new Insets(8, 12, 8, 12));
 
-    HBox topBar = new HBox();
+    ContextMenu userMenu = new ContextMenu();
+
+    //item1
+    Label lblCrear = new Label("Crear usuario");
+    lblCrear.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12 ;");
+    HBox crearBox = new HBox(lblCrear);
+    crearBox.setStyle("-fx-background-color: transparent;");
+    CustomMenuItem crearUsuario = new CustomMenuItem(crearBox, true);
+
+    Label lblCerrar = new Label("Cerrar sesión");
+    lblCerrar.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12 ;");
+    HBox cerrarBox = new HBox(lblCerrar);
+    cerrarBox.setStyle("-fx-background-color: transparent;");
+    CustomMenuItem cerrarSesion = new CustomMenuItem(cerrarBox, true);
+
+    crearBox.setOnMouseEntered(e -> crearBox.setStyle("-fx-background-color: #ff4c4c;"));
+    crearBox.setOnMouseExited(e -> crearBox.setStyle("-fx-background-color: transparent;"));
+
+    cerrarBox.setOnMouseEntered(e -> cerrarBox.setStyle("-fx-background-color: #ff4c4c;"));
+    cerrarBox.setOnMouseExited(e -> cerrarBox.setStyle("-fx-background-color: transparent;"));
+
+    crearBox.setOnMouseClicked(e -> mostrarPantallaRegistro(stage));
+    cerrarBox.setOnMouseClicked(e -> mostrarPantallaLogin(stage));
+
+    userMenu.getItems().addAll(crearUsuario, cerrarSesion);
+
+    //muestra dropdownde
+    userButton.setOnMouseClicked(e -> {
+        if (!userMenu.isShowing()) {
+            userMenu.show(userButton, Side.BOTTOM, 0, 0);
+        } else {
+            userMenu.hide();
+        }
+    });
+
+    // top
+    BorderPane topBar = new BorderPane();
+    topBar.setLeft(logoView);
+    topBar.setRight(userButton);
+    topBar.getStyleClass().add("top-bar");
     topBar.setPadding(new Insets(10, 20, 10, 20));
-    topBar.setSpacing(10);
-    HBox.setHgrow(userBox, Priority.ALWAYS); 
-    topBar.getChildren().addAll(logoView, userBox);
-    topBar.getStyleClass().add("top-bar"); // CSS
 
-    Button btnInicio = new Button("Inicio");
-    Button btnUsuarios = new Button("Usuarios");
-    Button btnReportes = new Button("Reportes");
-    Button btnCerrarNav = new Button("Cerrar sesión");
-    btnCerrarNav.setOnAction(e -> Platform.runLater(() -> mostrarPantallaLogin(stage)));
+    // nav
+    Button btnprincipal = new Button("Menu Principal");
+    Button btncrud = new Button("CRUD");
+    Button btninventario = new Button("Inventario");
+    Button btnmov = new Button("Movimientos");
 
-    HBox navbar = new HBox(20, btnInicio, btnUsuarios, btnReportes, btnCerrarNav);
+    HBox navbar = new HBox(btnprincipal, btncrud, btninventario, btnmov);
+    navbar.setSpacing(50);
     navbar.setAlignment(Pos.CENTER_LEFT);
-    navbar.setPadding(new Insets(10, 20, 10, 20));
+    navbar.setPadding(new Insets(12, 20, 12, 20));
     navbar.getStyleClass().add("navbar");
-    navbar.setMaxWidth(Double.MAX_VALUE); 
-    
-    VBox topContainer = new VBox(topBar, navbar);
-    topContainer.setSpacing(5);
-    topContainer.setPadding(new Insets(0));
 
+    VBox topContainer = new VBox(topBar, navbar);
+
+    // panel de enmedio
     Label lbl = new Label("Bienvenido ADMIN");
     lbl.getStyleClass().add("subtitulo");
 
-    Label info = new Label("pepeewd");
+    Label info = new Label("pepep");
     info.getStyleClass().add("descripcion");
     info.setWrapText(true);
 
-    Button btnCerrarCentral = new Button("Cerrar sesión");
-    btnCerrarCentral.getStyleClass().add("button-secondary");
-    btnCerrarCentral.setOnAction(e -> mostrarPantallaLogin(stage));
-
-    VBox panelCentral = new VBox(20, lbl, info, btnCerrarCentral);
-    panelCentral.getStyleClass().add("card");
-    panelCentral.setPadding(new Insets(40));
+    VBox panelCentral = new VBox(20, lbl, info);
     panelCentral.setAlignment(Pos.CENTER);
+    panelCentral.setPadding(new Insets(40));
+    panelCentral.getStyleClass().add("panel");
 
     BorderPane root = new BorderPane();
     root.setTop(topContainer);
@@ -349,11 +469,9 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
     root.setPadding(new Insets(20));
 
     Scene scene = new Scene(root, 1200, 800);
-    aplicarCss(scene); 
-
+    aplicarCss(scene);
     stage.setScene(scene);
-    stage.setMaximized(true); 
-    stage.centerOnScreen();
+    stage.setMaximized(true);
 }
 
 

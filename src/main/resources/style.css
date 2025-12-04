@@ -6,13 +6,77 @@
     -fx-background-color: #12121C;
     -fx-background-radius: 20;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 30, 0, 0, 10);
-    
     -fx-border-radius: 10;       
     -fx-border-color: rgba(255,0,0,0.3); 
     -fx-border-width: 2;        
 
 
 }
+.panel {
+    -fx-background-color: #12121C;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 30, 0, 0, 10);
+    -fx-border-radius: 10;       
+    -fx-border-color: rgba(255,0,0,0.3); 
+    -fx-border-width: 2;        
+
+
+}
+.context-menu {
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.2), 4, 0, 0, 2);
+}
+
+.context-menu .menu-item {
+    -fx-text-fill: black;   
+    -fx-font-size: 14px;
+    -fx-padding: 8 16 8 16;
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #ff4c4c;
+    -fx-text-fill: black;        
+}
+
+.user-button {
+    -fx-background-color: #12121C;
+    -fx-border-color: rgba(255,0,0,0.3); 
+    -fx-border-width: 2;
+    -fx-background-radius: 8;
+    -fx-border-radius: 10;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+}
+
+
+.user-label {
+    -fx-text-fill: #000;
+    -fx-font-size: 16px;
+}
+
+.dropdown {
+    -fx-background-color: white;
+    -fx-padding: 6 0 6 0;
+    -fx-background-radius: 10;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0, 0, 2);
+}
+
+.dropdown-item {
+    -fx-background-color: transparent;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-pref-width: 160;
+}
+
+.dropdown-item:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+
+
 .top-bar {
     -fx-background-color: #12121C;  
     -fx-padding: 10 20;             
@@ -29,17 +93,19 @@
     -fx-background-color: #2C2C37; 
     -fx-padding: 10 20;
     -fx-spacing: 15;
-    -fx-background-radius: 15;
+    -fx-background-radius: 5;
 }
 
 .navbar Button {
     -fx-background-color: #2C2C37;
     -fx-text-fill: #FFFFFF;
-    -fx-background-radius: 20;
-    -fx-padding: 6 20;
+    -fx-background-radius: 5;
+    -fx-padding: 10 30;
     -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-font-size: 15px;
+    -fx-font-family: "Segoe UI";
+
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 3);
 }
 

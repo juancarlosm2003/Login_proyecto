@@ -23,4 +23,20 @@ public class Usuario {
     public Rol getRol() {
         return rol;
     }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+    
+    
+    
+    
 }
