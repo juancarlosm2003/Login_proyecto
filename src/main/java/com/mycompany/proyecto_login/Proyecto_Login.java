@@ -571,10 +571,6 @@ private VBox crearVistaAdminMovimientos() {
     card.getChildren().addAll(lblTitulo, lblInfo);
     return card;
 }
-
-
-
-
 private void mostrarCaja(Stage stage, Usuario usuario) {
 
     // ==== LOGO ====
@@ -625,7 +621,7 @@ private void mostrarCaja(Stage stage, Usuario usuario) {
     topBar.setPadding(new Insets(10, 20, 10, 20));
     topBar.getStyleClass().add("top-bar");
 
-    // ==== NAVBAR ====
+    // ==== NAVBAR (MENÚ) ====
     Button btnprincipal = new Button("Menú Principal");
     Button btnCobros = new Button("Cobros");
     Button btnHistorial = new Button("Historial");
@@ -643,24 +639,39 @@ private void mostrarCaja(Stage stage, Usuario usuario) {
 
     VBox topContainer = new VBox(topBar, navbar);
 
-    // ==== CONTENIDO CENTRAL ====
+    // ==== CONTENEDOR CENTRAL ====
     VBox centerContent = new VBox(20);
     centerContent.setPadding(new Insets(30));
 
-    // Card principal
-    VBox card = new VBox(10);
-    card.getStyleClass().add("card");
+    // Vistas para cada opción
+    VBox vistaPrincipal = crearVistaCajaPrincipal(usuario);
+    VBox vistaCobros = crearVistaCajaCobros();
+    VBox vistaHistorial = crearVistaCajaHistorial();
+    VBox vistaCorte = crearVistaCajaCorte();
 
-    Label lblTitulo = new Label("Caja - Punto de venta");
-    lblTitulo.getStyleClass().add("subtitulo");
+    // Vista inicial
+    centerContent.getChildren().setAll(vistaPrincipal);
 
-    Label lblInfo = new Label("Registra pagos, genera tickets y controla el flujo de efectivo del día.");
-    lblInfo.getStyleClass().add("descripcion");
-    lblInfo.setWrapText(true);
+    // ==== ACCIONES NAVBAR ====
+    btnprincipal.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaPrincipal);
+        actualizarSeleccionNavbar(btnprincipal, btnprincipal, btnCobros, btnHistorial, btnCorte);
+    });
 
-    card.getChildren().addAll(lblTitulo, lblInfo);
+    btnCobros.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaCobros);
+        actualizarSeleccionNavbar(btnCobros, btnprincipal, btnCobros, btnHistorial, btnCorte);
+    });
 
-    centerContent.getChildren().add(card);
+    btnHistorial.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaHistorial);
+        actualizarSeleccionNavbar(btnHistorial, btnprincipal, btnCobros, btnHistorial, btnCorte);
+    });
+
+    btnCorte.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaCorte);
+        actualizarSeleccionNavbar(btnCorte, btnprincipal, btnCobros, btnHistorial, btnCorte);
+    });
 
     // ==== ROOT ====
     BorderPane root = new BorderPane();
@@ -672,6 +683,70 @@ private void mostrarCaja(Stage stage, Usuario usuario) {
     aplicarCss(scene);
     stage.setScene(scene);
     stage.setMaximized(true);
+}
+// ====== CAJA: MENÚ PRINCIPAL ======
+private VBox crearVistaCajaPrincipal(Usuario usuario) {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Caja - Punto de venta");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Bienvenido, " + usuario.getUsuario()
+            + ". Desde aquí puedes controlar los cobros y el flujo de caja del día.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== CAJA: COBROS ======
+private VBox crearVistaCajaCobros() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Cobros");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Registra los pagos de los clientes, aplica descuentos y genera comprobantes.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== CAJA: HISTORIAL ======
+private VBox crearVistaCajaHistorial() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Historial de cobros");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Consulta los cobros realizados en el día, filtros por fecha y método de pago.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== CAJA: CORTE DE CAJA ======
+private VBox crearVistaCajaCorte() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Corte de caja");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Genera el corte de caja al final del turno: resumen de ingresos, egresos y saldo.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
 }
 
 
