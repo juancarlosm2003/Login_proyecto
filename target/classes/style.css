@@ -222,4 +222,47 @@
     -fx-background-color: #ff1744;
     -fx-text-fill: #ffffff;
 }
+/* ===== Menú del usuario (ContextMenu) ===== */
+
+/* ===== Menú del usuario (ContextMenu) ===== */
+
+.context-menu {
+    -fx-background-color: #101119;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #262838;
+    -fx-border-width: 1;
+    -fx-padding: 4 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0.3, 0, 4);
+}
+
+/* Cada fila del menú */
+.user-menu-item {
+    -fx-padding: 8 18;
+    -fx-background-color: transparent;
+}
+
+/* Hover rojo ocupando toda la fila */
+.user-menu-item:hover {
+    -fx-background-color: #ff1744;
+}
+
+/* Texto de las opciones */
+.user-menu-label {
+    -fx-text-fill: #e2e3f0;
+    -fx-font-size: 13px;
+}
+
+/* Quitar el borde celeste de enfoque dentro del menú */
+.context-menu .menu-item:focused,
+.user-menu-item:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Quitar el borde celeste global (opcional, queda más limpio en todo el sistema) */
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
 
