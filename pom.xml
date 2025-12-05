@@ -17,12 +17,14 @@
     </properties>
 
     <dependencies>
+        <!-- JavaFX Controls -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
+        <!-- JavaFX FXML (si en algún momento lo usas) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
@@ -33,6 +35,7 @@
     <build>
         <plugins>
 
+            <!-- Compilador -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -42,12 +45,19 @@
                 </configuration>
             </plugin>
 
+            <!-- Plugin de JavaFX -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
+                    <!-- Tu clase main -->
                     <mainClass>com.mycompany.proyecto_login.Proyecto_Login</mainClass>
+
+                    <!-- Aquí agregamos el flag para quitar el WARNING -->
+                    <jvmArgs>
+                        <jvmArg>--enable-native-access=javafx.graphics</jvmArg>
+                    </jvmArgs>
                 </configuration>
             </plugin>
 

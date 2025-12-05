@@ -15,6 +15,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
+
 
 public class Proyecto_Login extends Application {
 
@@ -705,22 +709,99 @@ public class Proyecto_Login extends Application {
         card.getChildren().addAll(lblTitulo, lblInfo);
         return card;
     }
-
     // ====== CAJA: COBROS ======
-    private VBox crearVistaCajaCobros() {
-        VBox card = new VBox(10);
-        card.getStyleClass().add("card");
+private VBox crearVistaCajaCobros() {
+    VBox card = new VBox(15);
+    card.getStyleClass().add("card");
 
-        Label lblTitulo = new Label("Cobros");
-        lblTitulo.getStyleClass().add("subtitulo");
+    // Título y descripción
+    Label lblTitulo = new Label("Cobros");
+    lblTitulo.getStyleClass().add("subtitulo");
 
-        Label lblInfo = new Label("Registra los pagos de los clientes, aplica descuentos y genera comprobantes.");
-        lblInfo.getStyleClass().add("descripcion");
-        lblInfo.setWrapText(true);
+    Label lblInfo = new Label("Registra los pagos de los clientes, agrega productos a la cuenta y genera el cobro final.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
 
-        card.getChildren().addAll(lblTitulo, lblInfo);
-        return card;
-    }
+    // Tabla de productos en la cuenta
+    TableView<ItemCuenta> tabla = new TableView<>();
+    tabla.getStyleClass().add("tabla-cobros");
+    tabla.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+    TableColumn<ItemCuenta, String> colProducto = new TableColumn<>("Producto");
+    colProducto.setCellValueFactory(data ->
+            new SimpleStringProperty(data.getValue().getDescripcion()));
+
+    TableColumn<ItemCuenta, String> colCant = new TableColumn<>("Cant.");
+    colCant.setMaxWidth(80);
+    colCant.setCellValueFactory(data ->
+            new SimpleStringProperty(String.valueOf(data.getValue().getCantidad())));
+
+    TableColumn<ItemCuenta, String> colPrecio = new TableColumn<>("Precio");
+    colPrecio.setMinWidth(90);
+    colPrecio.setCellValueFactory(data ->
+            new SimpleStringProperty(String.format("L %.2f", data.getValue().getPrecio())));
+
+    TableColumn<ItemCuenta, String> colTotal = new TableColumn<>("Total");
+    colTotal.setMinWidth(90);
+    colTotal.setCellValueFactory(data ->
+            new SimpleStringProperty(String.format("L %.2f", data.getValue().getSubtotal())));
+
+    tabla.getColumns().addAll(colProducto, colCant, colPrecio, colTotal);
+
+    // Datos de ejemplo
+    ObservableList<ItemCuenta> datos = FXCollections.observableArrayList(
+            new ItemCuenta("Hamburguesa clásica", 1, 180.00),
+            new ItemCuenta("Papas fritas", 2, 60.00),
+            new ItemCuenta("Refresco", 2, 40.00)
+    );
+    tabla.setItems(datos);
+
+    // Totales (por ahora fijos; luego podemos calcularlos)
+    Label lblSubtotal = new Label("Subtotal:");
+    lblSubtotal.getStyleClass().add("totales-label");
+    Label lblSubtotalValor = new Label("L 380.00");
+    lblSubtotalValor.getStyleClass().add("totales-valor");
+
+    Label lblImpuesto = new Label("Impuesto (15%):");
+    lblImpuesto.getStyleClass().add("totales-label");
+    Label lblImpuestoValor = new Label("L 57.00");
+    lblImpuestoValor.getStyleClass().add("totales-valor");
+
+    Label lblTotal = new Label("Total a pagar:");
+    lblTotal.getStyleClass().add("totales-label-strong");
+    Label lblTotalValor = new Label("L 437.00");
+    lblTotalValor.getStyleClass().add("totales-valor-strong");
+
+    GridPane boxTotales = new GridPane();
+    boxTotales.getStyleClass().add("totales-box");
+    boxTotales.setHgap(10);
+    boxTotales.setVgap(4);
+    boxTotales.add(lblSubtotal, 0, 0);
+    boxTotales.add(lblSubtotalValor, 1, 0);
+    boxTotales.add(lblImpuesto, 0, 1);
+    boxTotales.add(lblImpuestoValor, 1, 1);
+    boxTotales.add(lblTotal, 0, 2);
+    boxTotales.add(lblTotalValor, 1, 2);
+
+    // Botones de acción
+    Button btnAgregar = new Button("Agregar producto");
+    btnAgregar.getStyleClass().add("button-secondary");
+
+    Button btnEliminar = new Button("Eliminar línea");
+    btnEliminar.getStyleClass().add("button-secondary");
+
+    Button btnCancelar = new Button("Cancelar cuenta");
+    btnCancelar.getStyleClass().add("button-secondary");
+
+    Button btnCobrar = new Button("Cobrar");
+    btnCobrar.getStyleClass().add("button-primary");
+
+    HBox acciones = new HBox(10, btnAgregar, btnEliminar, btnCancelar, btnCobrar);
+    acciones.setAlignment(Pos.CENTER_RIGHT);
+
+    card.getChildren().addAll(lblTitulo, lblInfo, tabla, boxTotales, acciones);
+    return card;
+}
 
     // ====== CAJA: HISTORIAL ======
     private VBox crearVistaCajaHistorial() {
@@ -755,107 +836,187 @@ public class Proyecto_Login extends Application {
     }
 
     // -------------------------------------------------------------------------
-    // OPERADOR
-    // -------------------------------------------------------------------------
-    private void mostrarOperador(Stage stage, Usuario usuario) {
+// OPERADOR
+// -------------------------------------------------------------------------
+private void mostrarOperador(Stage stage, Usuario usuario) {
 
-        // ==== LOGO ====
-        Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
-        ImageView logoView = new ImageView(logoImg);
-        logoView.setFitWidth(200);
-        logoView.setPreserveRatio(true);
+    // ==== LOGO ====
+    Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
+    ImageView logoView = new ImageView(logoImg);
+    logoView.setFitWidth(200);
+    logoView.setPreserveRatio(true);
 
-        // ==== BOTÓN USUARIO (CON MENÚ) ====
-        Label lblUsuario = new Label(usuario.getUsuario());
-        lblUsuario.getStyleClass().add("user-label");
+    // ==== BOTÓN USUARIO (CON MENÚ) ====
+    Label lblUsuario = new Label(usuario.getUsuario());
+    lblUsuario.getStyleClass().add("user-label");
 
-        Image userIcon = new Image(getClass().getResourceAsStream("/imgs/user_icon.png"));
-        ImageView userIconView = new ImageView(userIcon);
-        userIconView.setFitWidth(28);
-        userIconView.setPreserveRatio(true);
+    Image userIcon = new Image(getClass().getResourceAsStream("/imgs/user_icon.png"));
+    ImageView userIconView = new ImageView(userIcon);
+    userIconView.setFitWidth(28);
+    userIconView.setPreserveRatio(true);
 
-        HBox userButton = new HBox(8, lblUsuario, userIconView);
-        userButton.setAlignment(Pos.CENTER_RIGHT);
-        userButton.getStyleClass().add("user-button");
-        userButton.setPadding(new Insets(8, 12, 8, 12));
+    HBox userButton = new HBox(8, lblUsuario, userIconView);
+    userButton.setAlignment(Pos.CENTER_RIGHT);
+    userButton.getStyleClass().add("user-button");
+    userButton.setPadding(new Insets(8, 12, 8, 12));
 
-        ContextMenu userMenu = new ContextMenu();
+    ContextMenu userMenu = new ContextMenu();
 
-        Label lblCerrar = new Label("Cerrar sesión");
-        lblCerrar.getStyleClass().add("user-menu-label");
-        HBox cerrarBox = new HBox(lblCerrar);
-        cerrarBox.getStyleClass().add("user-menu-item");
-        CustomMenuItem itemCerrar = new CustomMenuItem(cerrarBox, true);
+    Label lblCerrar = new Label("Cerrar sesión");
+    lblCerrar.getStyleClass().add("user-menu-label");
+    HBox cerrarBox = new HBox(lblCerrar);
+    cerrarBox.setAlignment(Pos.CENTER_LEFT);
+    cerrarBox.getStyleClass().add("user-menu-item");
+    CustomMenuItem itemCerrar = new CustomMenuItem(cerrarBox, true);
 
-        cerrarBox.setOnMouseClicked(e -> {
+    cerrarBox.setOnMouseClicked(e -> {
+        userMenu.hide();
+        mostrarPantallaLogin(stage);
+    });
+
+    userMenu.getItems().add(itemCerrar);
+
+    userButton.setOnMouseClicked(e -> {
+        if (!userMenu.isShowing()) {
+            userMenu.show(userButton, Side.BOTTOM, 0, 0);
+        } else {
             userMenu.hide();
-            mostrarPantallaLogin(stage);
-        });
+        }
+    });
 
-        userMenu.getItems().add(itemCerrar);
+    // ==== TOP BAR ====
+    BorderPane topBar = new BorderPane();
+    topBar.setLeft(logoView);
+    topBar.setRight(userButton);
+    topBar.setPadding(new Insets(10, 20, 10, 20));
+    topBar.getStyleClass().add("top-bar");
 
-        userButton.setOnMouseClicked(e -> {
-            if (!userMenu.isShowing()) {
-                userMenu.show(userButton, Side.BOTTOM, 0, 0);
-            } else {
-                userMenu.hide();
-            }
-        });
+    // ==== NAVBAR ====
+    Button btnprincipal = new Button("Menú Principal");
+    Button btnComandas = new Button("Comandas");
+    Button btnMesas = new Button("Mesas");
+    Button btnCocina = new Button("Cocina");
 
-        // ==== TOP BAR ====
-        BorderPane topBar = new BorderPane();
-        topBar.setLeft(logoView);
-        topBar.setRight(userButton);
-        topBar.setPadding(new Insets(10, 20, 10, 20));
-        topBar.getStyleClass().add("top-bar");
+    btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
+    btnComandas.getStyleClass().add("navbar-button");
+    btnMesas.getStyleClass().add("navbar-button");
+    btnCocina.getStyleClass().add("navbar-button");
 
-        // ==== NAVBAR ====
-        Button btnprincipal = new Button("Menú Principal");
-        Button btnComandas = new Button("Comandas");
-        Button btnMesas = new Button("Mesas");
-        Button btnCocina = new Button("Cocina");
+    HBox navbar = new HBox(20, btnprincipal, btnComandas, btnMesas, btnCocina);
+    navbar.setAlignment(Pos.CENTER_LEFT);
+    navbar.setPadding(new Insets(12, 20, 12, 20));
+    navbar.getStyleClass().add("navbar");
 
-        btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
-        btnComandas.getStyleClass().add("navbar-button");
-        btnMesas.getStyleClass().add("navbar-button");
-        btnCocina.getStyleClass().add("navbar-button");
+    VBox topContainer = new VBox(topBar, navbar);
 
-        HBox navbar = new HBox(20, btnprincipal, btnComandas, btnMesas, btnCocina);
-        navbar.setAlignment(Pos.CENTER_LEFT);
-        navbar.setPadding(new Insets(12, 20, 12, 20));
-        navbar.getStyleClass().add("navbar");
+    // ==== CONTENIDO CENTRAL (cambia según el botón) ====
+    VBox centerContent = new VBox(20);
+    centerContent.setPadding(new Insets(30));
 
-        VBox topContainer = new VBox(topBar, navbar);
+    VBox vistaPrincipal = crearVistaOperadorPrincipal(usuario);
+    VBox vistaComandas = crearVistaOperadorComandas();
+    VBox vistaMesas = crearVistaOperadorMesas();
+    VBox vistaCocina = crearVistaOperadorCocina();
 
-        // ==== CONTENIDO CENTRAL ====
-        VBox centerContent = new VBox(20);
-        centerContent.setPadding(new Insets(30));
+    // Vista inicial
+    centerContent.getChildren().setAll(vistaPrincipal);
 
-        VBox card = new VBox(10);
-        card.getStyleClass().add("card");
+    // Acciones navbar
+    btnprincipal.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaPrincipal);
+        actualizarSeleccionNavbar(btnprincipal, btnprincipal, btnComandas, btnMesas, btnCocina);
+    });
 
-        Label lblTitulo = new Label("Operador - Gestión de servicio");
-        lblTitulo.getStyleClass().add("subtitulo");
+    btnComandas.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaComandas);
+        actualizarSeleccionNavbar(btnComandas, btnprincipal, btnComandas, btnMesas, btnCocina);
+    });
 
-        Label lblInfo = new Label("Gestiona las mesas, las comandas y el flujo de pedidos hacia cocina.");
-        lblInfo.getStyleClass().add("descripcion");
-        lblInfo.setWrapText(true);
+    btnMesas.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaMesas);
+        actualizarSeleccionNavbar(btnMesas, btnprincipal, btnComandas, btnMesas, btnCocina);
+    });
 
-        card.getChildren().addAll(lblTitulo, lblInfo);
-        centerContent.getChildren().add(card);
+    btnCocina.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaCocina);
+        actualizarSeleccionNavbar(btnCocina, btnprincipal, btnComandas, btnMesas, btnCocina);
+    });
 
-        // ==== ROOT ====
-        BorderPane root = new BorderPane();
-        root.setTop(topContainer);
-        root.setCenter(centerContent);
-        root.setPadding(new Insets(20));
+    // ==== ROOT ====
+    BorderPane root = new BorderPane();
+    root.setTop(topContainer);
+    root.setCenter(centerContent);
+    root.setPadding(new Insets(20));
 
-        Scene scene = new Scene(root, 1200, 800);
-        aplicarCss(scene);
-        stage.setScene(scene);
-        stage.setMaximized(true);
-    }
+    Scene scene = new Scene(root, 1200, 800);
+    aplicarCss(scene);
+    stage.setScene(scene);
+    stage.setMaximized(true);
+}
+// ====== OPERADOR: MENÚ PRINCIPAL ======
+private VBox crearVistaOperadorPrincipal(Usuario usuario) {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
 
+    Label lblTitulo = new Label("Operador - Gestión de servicio");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Bienvenido, " + usuario.getUsuario()
+            + ". Desde aquí puedes coordinar mesas, comandas y pedidos hacia cocina.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== OPERADOR: COMANDAS ======
+private VBox crearVistaOperadorComandas() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Comandas");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Visualiza las comandas abiertas, envía pedidos a cocina y marca órdenes como servidas.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== OPERADOR: MESAS ======
+private VBox crearVistaOperadorMesas() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Mesas");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Administra el estado de las mesas: libre, ocupada, en espera de cuenta, reservada, etc.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== OPERADOR: COCINA ======
+private VBox crearVistaOperadorCocina() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Cocina");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Consulta los pedidos pendientes en cocina y su estado de preparación.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
     // -------------------------------------------------------------------------
     // MAIN
     // -------------------------------------------------------------------------

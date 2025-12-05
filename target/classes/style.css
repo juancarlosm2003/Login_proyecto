@@ -1,14 +1,12 @@
 .root {
     -fx-font-family: "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-    -fx-background-color: #05050a; 
+    -fx-background-color: #05050a;
 }
 
 .main-container {
     -fx-alignment: center;
     -fx-padding: 40 0 40 0;
 }
-
-
 
 .card {
     -fx-background-color: #0f1018;
@@ -20,12 +18,24 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 20, 0.4, 0, 8);
 }
 
-
+/* ===== Títulos y textos ===== */
 
 .title {
     -fx-text-fill: #ffffff;
     -fx-font-size: 22px;
     -fx-font-weight: bold;
+}
+
+/* Alias para lo que usas en Java: "subtitulo" y "descripcion" */
+.subtitulo {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.descripcion {
+    -fx-text-fill: #b0b3c5;
+    -fx-font-size: 13px;
 }
 
 .subtitle {
@@ -44,19 +54,38 @@
     -fx-font-size: 13px;
 }
 
+/* ===== Mensajes (login, registro, etc.) ===== */
+
+.mensaje {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+}
+
+/* Mensaje de éxito: "Usuario creado correctamente." */
+.mensaje-ok {
+    -fx-text-fill: #2eff7b;              /* verde neón bien visible */
+    -fx-effect: dropshadow(gaussian, rgba(46,255,123,0.5), 8, 0.4, 0, 0);
+}
+
 /* Mensajes de error */
+.mensaje-error {
+    -fx-text-fill: #ff4b6e;
+}
+
+/* (por si en otros lados usas estas clases) */
 .error-label {
     -fx-text-fill: #ff4b6e;
     -fx-font-size: 11px;
 }
 
-/* Mensajes de éxito / info */
 .info-label {
     -fx-text-fill: #4caf50;
     -fx-font-size: 11px;
 }
 
-.text-field, .password-field {
+/* ===== Campos de texto ===== */
+
+.text-field, .password-field, .input {
     -fx-background-color: #101119;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
@@ -67,11 +96,12 @@
     -fx-padding: 8 10 8 10;
 }
 
-.text-field:focused, .password-field:focused {
+.text-field:focused, .password-field:focused, .input:focused {
     -fx-border-color: #ff1744;
     -fx-background-color: #151624;
 }
 
+/* ===== Botones ===== */
 
 .button-primary {
     -fx-background-color: #ff1744;
@@ -99,6 +129,7 @@
 .button-secondary:hover {
     -fx-background-color: rgba(255, 23, 68, 0.12);
 }
+
 .button-danger {
     -fx-background-color: #c62828;
     -fx-text-fill: white;
@@ -109,6 +140,8 @@
 .button-danger:hover {
     -fx-background-color: #e53935;
 }
+
+/* ===== Navbar ===== */
 
 .navbar {
     -fx-background-color: #0c0d14;
@@ -129,6 +162,8 @@
     -fx-text-fill: #b0b3c5;
     -fx-font-size: 13px;
 }
+
+/* ===== Sidebar (si la usas) ===== */
 
 .sidebar {
     -fx-background-color: #0b0c12;
@@ -196,7 +231,8 @@
     -fx-background-color: #ff1744;
     -fx-text-fill: white;
 }
-/* ===== Botones del navbar (ADMIN) ===== */
+
+/* ===== Botones del navbar (ADMIN/CAJA/OPERADOR) ===== */
 
 .navbar-button {
     -fx-background-color: transparent;
@@ -207,8 +243,6 @@
     -fx-border-radius: 999;
     -fx-border-color: transparent;
     -fx-cursor: hand;
-
-    /* quitar ese borde azul feo de focus */
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
@@ -222,7 +256,6 @@
     -fx-background-color: #ff1744;
     -fx-text-fill: #ffffff;
 }
-/* ===== Menú del usuario (ContextMenu) ===== */
 
 /* ===== Menú del usuario (ContextMenu) ===== */
 
@@ -236,33 +269,69 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0.3, 0, 4);
 }
 
-/* Cada fila del menú */
 .user-menu-item {
     -fx-padding: 8 18;
     -fx-background-color: transparent;
 }
 
-/* Hover rojo ocupando toda la fila */
 .user-menu-item:hover {
     -fx-background-color: #ff1744;
 }
 
-/* Texto de las opciones */
 .user-menu-label {
     -fx-text-fill: #e2e3f0;
     -fx-font-size: 13px;
 }
 
-/* Quitar el borde celeste de enfoque dentro del menú */
 .context-menu .menu-item:focused,
 .user-menu-item:focused {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 
-/* Quitar el borde celeste global (opcional, queda más limpio en todo el sistema) */
+/* Quitar focus azul global */
 * {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
 
+/* ================================
+   COMBOBOX PERSONALIZADO
+   ================================ */
+
+.combo-box {
+    -fx-background-color: #1a1a1a;
+    -fx-background-radius: 8;
+    -fx-border-color: #ff0048;
+    -fx-border-radius: 8;
+    -fx-border-width: 1.2px;
+    -fx-padding: 4 8;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #111;
+    -fx-control-inner-background: #111;
+    -fx-border-color: #ff0048;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #ff0048;
+    -fx-text-fill: white;
+}

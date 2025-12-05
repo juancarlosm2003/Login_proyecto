@@ -2,5 +2,6 @@ com/mycompany/proyecto_login/Usuario.class
 com/mycompany/proyecto_login/UserStore.class
 com/mycompany/proyecto_login/Rol.class
 com/mycompany/proyecto_login/CasoLogin.class
+com/mycompany/proyecto_login/ItemCuenta.class
 com/mycompany/proyecto_login/Proyecto_Login$1.class
 com/mycompany/proyecto_login/Proyecto_Login.class
