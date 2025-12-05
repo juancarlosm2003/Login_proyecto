@@ -437,7 +437,7 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
     topBar.getStyleClass().add("top-bar");
 
     // ==== NAVBAR (MENÚ) ====
-    Button btnprincipal = new Button("Menú Principal");
+    Button btnprincipal = new Button("Menu Principal");
     Button btncrud = new Button("CRUD");
     Button btninventario = new Button("Inventario");
     Button btnmov = new Button("Movimientos");
@@ -452,29 +452,219 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
     navbar.setPadding(new Insets(12, 20, 12, 20));
     navbar.getStyleClass().add("navbar");
 
-    // contenedor superior (logo + navbar)
     VBox topContainer = new VBox(topBar, navbar);
 
-    // ==== CONTENIDO CENTRAL ====
+    // ==== CONTENEDOR CENTRAL (donde cambiaremos el contenido) ====
     VBox centerContent = new VBox(20);
     centerContent.setPadding(new Insets(30));
 
+    // Vistas para cada opción del menú
+    VBox vistaPrincipal = crearVistaAdminPrincipal(usuario);
+    VBox vistaCrud = crearVistaAdminCrud();
+    VBox vistaInventario = crearVistaAdminInventario();
+    VBox vistaMovimientos = crearVistaAdminMovimientos();
+
+    // Vista inicial
+    centerContent.getChildren().setAll(vistaPrincipal);
+
+    // ==== ACCIONES DE LOS BOTONES DEL NAVBAR ====
+    btnprincipal.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaPrincipal);
+        actualizarSeleccionNavbar(btnprincipal, btnprincipal, btncrud, btninventario, btnmov);
+    });
+
+    btncrud.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaCrud);
+        actualizarSeleccionNavbar(btncrud, btnprincipal, btncrud, btninventario, btnmov);
+    });
+
+    btninventario.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaInventario);
+        actualizarSeleccionNavbar(btninventario, btnprincipal, btncrud, btninventario, btnmov);
+    });
+
+    btnmov.setOnAction(e -> {
+        centerContent.getChildren().setAll(vistaMovimientos);
+        actualizarSeleccionNavbar(btnmov, btnprincipal, btncrud, btninventario, btnmov);
+    });
+
+    // ==== ROOT PRINCIPAL ====
+    BorderPane root = new BorderPane();
+    root.setTop(topContainer);
+    root.setCenter(centerContent);
+    root.setPadding(new Insets(20));
+
+    Scene scene = new Scene(root, 1200, 800);
+    aplicarCss(scene);
+    stage.setScene(scene);
+    stage.setMaximized(true);
+}
+// Marca un boton del navbar como seleccionado y limpia los demas
+private void actualizarSeleccionNavbar(Button seleccionado, Button... todos) {
+    for (Button b : todos) {
+        b.getStyleClass().remove("navbar-button-selected");
+    }
+    if (!seleccionado.getStyleClass().contains("navbar-button-selected")) {
+        seleccionado.getStyleClass().add("navbar-button-selected");
+    }
+}
+// ====== VISTA: MENU PRINCIPAL ======
+private VBox crearVistaAdminPrincipal(Usuario usuario) {
     VBox card = new VBox(10);
     card.getStyleClass().add("card");
 
     Label lblBienvenida = new Label("Bienvenido, " + usuario.getUsuario());
     lblBienvenida.getStyleClass().add("subtitulo");
 
-    Label lblInfo = new Label("Administra el restaurante La Oficina desde este panel.");
+    Label lblInfo = new Label("Administra el restaurante La Oficina desde este panel de administrador.");
     lblInfo.getStyleClass().add("descripcion");
     lblInfo.setWrapText(true);
 
     card.getChildren().addAll(lblBienvenida, lblInfo);
+    return card;
+}
+
+// ====== VISTA: CRUD ======
+private VBox crearVistaAdminCrud() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Módulo CRUD");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Aquí podrás gestionar (crear, actualizar y eliminar) registros del sistema.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== VISTA: INVENTARIO ======
+private VBox crearVistaAdminInventario() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Inventario");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Visualiza y controla el inventario de productos del restaurante.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+// ====== VISTA: MOVIMIENTOS ======
+private VBox crearVistaAdminMovimientos() {
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Movimientos");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Consulta los movimientos, ventas y cambios realizados en el sistema.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    return card;
+}
+
+
+
+
+private void mostrarCaja(Stage stage, Usuario usuario) {
+
+    // ==== LOGO ====
+    Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
+    ImageView logoView = new ImageView(logoImg);
+    logoView.setFitWidth(200);
+    logoView.setPreserveRatio(true);
+
+    // ==== BOTÓN USUARIO (CON MENÚ) ====
+    Label lblUsuario = new Label(usuario.getUsuario());
+    lblUsuario.getStyleClass().add("user-label");
+
+    Image userIcon = new Image(getClass().getResourceAsStream("/imgs/user_icon.png"));
+    ImageView userIconView = new ImageView(userIcon);
+    userIconView.setFitWidth(28);
+    userIconView.setPreserveRatio(true);
+
+    HBox userButton = new HBox(8, lblUsuario, userIconView);
+    userButton.setAlignment(Pos.CENTER_RIGHT);
+    userButton.getStyleClass().add("user-button");
+    userButton.setPadding(new Insets(8, 12, 8, 12));
+
+    ContextMenu userMenu = new ContextMenu();
+
+    Label lblCerrar = new Label("Cerrar sesión");
+    lblCerrar.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12;");
+    HBox cerrarBox = new HBox(lblCerrar);
+
+    cerrarBox.setOnMouseClicked(e -> {
+        userMenu.hide();
+        mostrarPantallaLogin(stage);
+    });
+
+    userMenu.getItems().add(new CustomMenuItem(cerrarBox, true));
+
+    userButton.setOnMouseClicked(e -> {
+        if (!userMenu.isShowing()) {
+            userMenu.show(userButton, Side.BOTTOM, 0, 0);
+        } else {
+            userMenu.hide();
+        }
+    });
+
+    // ==== TOP BAR ====
+    BorderPane topBar = new BorderPane();
+    topBar.setLeft(logoView);
+    topBar.setRight(userButton);
+    topBar.setPadding(new Insets(10, 20, 10, 20));
+    topBar.getStyleClass().add("top-bar");
+
+    // ==== NAVBAR ====
+    Button btnprincipal = new Button("Menú Principal");
+    Button btnCobros = new Button("Cobros");
+    Button btnHistorial = new Button("Historial");
+    Button btnCorte = new Button("Corte de caja");
+
+    btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
+    btnCobros.getStyleClass().add("navbar-button");
+    btnHistorial.getStyleClass().add("navbar-button");
+    btnCorte.getStyleClass().add("navbar-button");
+
+    HBox navbar = new HBox(20, btnprincipal, btnCobros, btnHistorial, btnCorte);
+    navbar.setAlignment(Pos.CENTER_LEFT);
+    navbar.setPadding(new Insets(12, 20, 12, 20));
+    navbar.getStyleClass().add("navbar");
+
+    VBox topContainer = new VBox(topBar, navbar);
+
+    // ==== CONTENIDO CENTRAL ====
+    VBox centerContent = new VBox(20);
+    centerContent.setPadding(new Insets(30));
+
+    // Card principal
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Caja - Punto de venta");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Registra pagos, genera tickets y controla el flujo de efectivo del día.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+
     centerContent.getChildren().add(card);
 
-    // ==== ROOT PRINCIPAL ====
+    // ==== ROOT ====
     BorderPane root = new BorderPane();
-    root.setTop(topContainer);      // ✅ ahora topContainer ya está declarado
+    root.setTop(topContainer);
     root.setCenter(centerContent);
     root.setPadding(new Insets(20));
 
@@ -485,58 +675,103 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
 }
 
 
-
-private void mostrarCaja(Stage stage, Usuario usuario) {
-        Label lbl = new Label("Bienvenido CAJITA");
-        lbl.getStyleClass().add("subtitulo");
-
-        Label info = new Label("pepeee");
-        info.getStyleClass().add("descripcion");
-        info.setWrapText(true);
-
-        Button btnCerrar = new Button("Cerrar sesión");
-        btnCerrar.getStyleClass().add("button-secondary");
-        btnCerrar.setOnAction(e -> mostrarPantallaLogin(stage));
-
-        VBox content = new VBox(20, lbl, info, btnCerrar);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(40));
-
-        StackPane root = new StackPane(content);
-        root.setPadding(new Insets(30));
-
-        Scene scene = new Scene(root);
-        aplicarCss(scene);
-
-        stage.setScene(scene);
-        stage.setMaximized(true); 
-}
-
 private void mostrarOperador(Stage stage, Usuario usuario) {
-     Label lbl = new Label("Bienvenido OPERADOE");
-        lbl.getStyleClass().add("subtitulo");
 
-        Label info = new Label("pepeee");
-        info.getStyleClass().add("descripcion");
-        info.setWrapText(true);
+    // ==== LOGO ====
+    Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
+    ImageView logoView = new ImageView(logoImg);
+    logoView.setFitWidth(200);
+    logoView.setPreserveRatio(true);
 
-        Button btnCerrar = new Button("Cerrar sesión");
-        btnCerrar.getStyleClass().add("button-secondary");
-        btnCerrar.setOnAction(e -> mostrarPantallaLogin(stage));
+    // ==== BOTÓN USUARIO (CON MENÚ) ====
+    Label lblUsuario = new Label(usuario.getUsuario());
+    lblUsuario.getStyleClass().add("user-label");
 
-        VBox content = new VBox(20, lbl, info, btnCerrar);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(40));
+    Image userIcon = new Image(getClass().getResourceAsStream("/imgs/user_icon.png"));
+    ImageView userIconView = new ImageView(userIcon);
+    userIconView.setFitWidth(28);
+    userIconView.setPreserveRatio(true);
 
-        StackPane root = new StackPane(content);
-        root.setPadding(new Insets(30));
+    HBox userButton = new HBox(8, lblUsuario, userIconView);
+    userButton.setAlignment(Pos.CENTER_RIGHT);
+    userButton.getStyleClass().add("user-button");
+    userButton.setPadding(new Insets(8, 12, 8, 12));
 
-        Scene scene = new Scene(root);
-        aplicarCss(scene);
+    ContextMenu userMenu = new ContextMenu();
 
-        stage.setScene(scene);
-        stage.setMaximized(true); 
+    Label lblCerrar = new Label("Cerrar sesión");
+    lblCerrar.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12;");
+    HBox cerrarBox = new HBox(lblCerrar);
+
+    cerrarBox.setOnMouseClicked(e -> {
+        userMenu.hide();
+        mostrarPantallaLogin(stage);
+    });
+
+    userMenu.getItems().add(new CustomMenuItem(cerrarBox, true));
+
+    userButton.setOnMouseClicked(e -> {
+        if (!userMenu.isShowing()) {
+            userMenu.show(userButton, Side.BOTTOM, 0, 0);
+        } else {
+            userMenu.hide();
+        }
+    });
+
+    // ==== TOP BAR ====
+    BorderPane topBar = new BorderPane();
+    topBar.setLeft(logoView);
+    topBar.setRight(userButton);
+    topBar.setPadding(new Insets(10, 20, 10, 20));
+    topBar.getStyleClass().add("top-bar");
+
+    // ==== NAVBAR ====
+    Button btnprincipal = new Button("Menú Principal");
+    Button btnComandas = new Button("Comandas");
+    Button btnMesas = new Button("Mesas");
+    Button btnCocina = new Button("Cocina");
+
+    btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
+    btnComandas.getStyleClass().add("navbar-button");
+    btnMesas.getStyleClass().add("navbar-button");
+    btnCocina.getStyleClass().add("navbar-button");
+
+    HBox navbar = new HBox(20, btnprincipal, btnComandas, btnMesas, btnCocina);
+    navbar.setAlignment(Pos.CENTER_LEFT);
+    navbar.setPadding(new Insets(12, 20, 12, 20));
+    navbar.getStyleClass().add("navbar");
+
+    VBox topContainer = new VBox(topBar, navbar);
+
+    // ==== CONTENIDO CENTRAL ====
+    VBox centerContent = new VBox(20);
+    centerContent.setPadding(new Insets(30));
+
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Operador - Gestión de servicio");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Gestiona las mesas, las comandas y el flujo de pedidos hacia cocina.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblTitulo, lblInfo);
+    centerContent.getChildren().add(card);
+
+    // ==== ROOT ====
+    BorderPane root = new BorderPane();
+    root.setTop(topContainer);
+    root.setCenter(centerContent);
+    root.setPadding(new Insets(20));
+
+    Scene scene = new Scene(root, 1200, 800);
+    aplicarCss(scene);
+    stage.setScene(scene);
+    stage.setMaximized(true);
 }
+
 
 public static void main(String[] args) {
     launch(args);
