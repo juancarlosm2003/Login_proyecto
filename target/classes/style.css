@@ -26,7 +26,6 @@
     -fx-font-weight: bold;
 }
 
-/* Alias para lo que usas en Java: "subtitulo" y "descripcion" */
 .subtitulo {
     -fx-text-fill: #ffffff;
     -fx-font-size: 18px;
@@ -72,7 +71,6 @@
     -fx-text-fill: #ff4b6e;
 }
 
-/* (por si en otros lados usas estas clases) */
 .error-label {
     -fx-text-fill: #ff4b6e;
     -fx-font-size: 11px;
@@ -162,8 +160,6 @@
     -fx-text-fill: #b0b3c5;
     -fx-font-size: 13px;
 }
-
-/* ===== Sidebar (si la usas) ===== */
 
 .sidebar {
     -fx-background-color: #0b0c12;
