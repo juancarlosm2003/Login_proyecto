@@ -71,7 +71,8 @@ public class Proyecto_Login extends Application {
 
         Button btnLogin = new Button("Ingresar");
         btnLogin.getStyleClass().add("button-primary");
-
+        btnLogin.disableProperty().bind(
+        txtUsuario.textProperty().isEmpty().or(txtPass.textProperty().isEmpty()));
         Button btnCrear = new Button("Crear usuario");
         btnCrear.getStyleClass().add("button-secondary");
 
@@ -394,13 +395,13 @@ public class Proyecto_Login extends Application {
         userButton.setPadding(new Insets(8, 12, 8, 12));
 
         // ==== MENÚ DEL USUARIO (ContextMenu) ====
-        ContextMenu userMenu = new ContextMenu(); // usa estilos .context-menu
+        ContextMenu userMenu = new ContextMenu(); 
 
         // Item: Crear usuario
         Label lblCrear = new Label("Crear usuario");
         lblCrear.getStyleClass().add("user-menu-label");
         HBox crearBox = new HBox(lblCrear);
-        crearBox.setAlignment(Pos.CENTER_LEFT);   // <- importante
+        crearBox.setAlignment(Pos.CENTER_LEFT);   
         crearBox.getStyleClass().add("user-menu-item");
         CustomMenuItem itemCrear = new CustomMenuItem(crearBox, true);
 
@@ -408,7 +409,7 @@ public class Proyecto_Login extends Application {
         Label lblCerrar = new Label("Cerrar sesión");
         lblCerrar.getStyleClass().add("user-menu-label");
         HBox cerrarBox = new HBox(lblCerrar);
-        cerrarBox.setAlignment(Pos.CENTER_LEFT);  // <- importante
+        cerrarBox.setAlignment(Pos.CENTER_LEFT);  
         cerrarBox.getStyleClass().add("user-menu-item");
         CustomMenuItem itemCerrar = new CustomMenuItem(cerrarBox, true);
 
@@ -756,7 +757,7 @@ private VBox crearVistaCajaCobros() {
     );
     tabla.setItems(datos);
 
-    // Totales (por ahora fijos; luego podemos calcularlos)
+    // Totales (por ahora fijos)
     Label lblSubtotal = new Label("Subtotal:");
     lblSubtotal.getStyleClass().add("totales-label");
     Label lblSubtotalValor = new Label("L 380.00");
@@ -909,7 +910,7 @@ private void mostrarOperador(Stage stage, Usuario usuario) {
 
     VBox topContainer = new VBox(topBar, navbar);
 
-    // ==== CONTENIDO CENTRAL (cambia según el botón) ====
+    // ==== CONTENIDO CENTRAL
     VBox centerContent = new VBox(20);
     centerContent.setPadding(new Insets(30));
 
