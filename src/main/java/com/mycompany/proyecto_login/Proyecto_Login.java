@@ -375,11 +375,14 @@ private void mostrarPantallaRol(Stage stage, Usuario usuario) {
     }
 }
 private void mostrarAdmin(Stage stage, Usuario usuario) {
+
+    // ==== LOGO ====
     Image logoImg = new Image(getClass().getResourceAsStream("/imgs/logonavbar.png"));
     ImageView logoView = new ImageView(logoImg);
     logoView.setFitWidth(200);
     logoView.setPreserveRatio(true);
 
+    // ==== BOTÓN USUARIO (CON MENÚ) ====
     Label lblUsuario = new Label(usuario.getUsuario());
     lblUsuario.getStyleClass().add("user-label");
 
@@ -388,7 +391,6 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
     userIconView.setFitWidth(28);
     userIconView.setPreserveRatio(true);
 
-    // usr box
     HBox userButton = new HBox(8, lblUsuario, userIconView);
     userButton.setAlignment(Pos.CENTER_RIGHT);
     userButton.getStyleClass().add("user-button");
@@ -396,31 +398,29 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
 
     ContextMenu userMenu = new ContextMenu();
 
-    //item1
     Label lblCrear = new Label("Crear usuario");
-    lblCrear.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12 ;");
+    lblCrear.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12;");
     HBox crearBox = new HBox(lblCrear);
-    crearBox.setStyle("-fx-background-color: transparent;");
-    CustomMenuItem crearUsuario = new CustomMenuItem(crearBox, true);
 
     Label lblCerrar = new Label("Cerrar sesión");
-    lblCerrar.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12 ;");
+    lblCerrar.setStyle("-fx-text-fill: black; -fx-font-size: 14px; -fx-padding: 4 12 4 12;");
     HBox cerrarBox = new HBox(lblCerrar);
-    cerrarBox.setStyle("-fx-background-color: transparent;");
-    CustomMenuItem cerrarSesion = new CustomMenuItem(cerrarBox, true);
 
-    crearBox.setOnMouseEntered(e -> crearBox.setStyle("-fx-background-color: #ff4c4c;"));
-    crearBox.setOnMouseExited(e -> crearBox.setStyle("-fx-background-color: transparent;"));
+    crearBox.setOnMouseClicked(e -> {
+        userMenu.hide();
+        mostrarPantallaRegistro(stage);
+    });
 
-    cerrarBox.setOnMouseEntered(e -> cerrarBox.setStyle("-fx-background-color: #ff4c4c;"));
-    cerrarBox.setOnMouseExited(e -> cerrarBox.setStyle("-fx-background-color: transparent;"));
+    cerrarBox.setOnMouseClicked(e -> {
+        userMenu.hide();
+        mostrarPantallaLogin(stage);
+    });
 
-    crearBox.setOnMouseClicked(e -> mostrarPantallaRegistro(stage));
-    cerrarBox.setOnMouseClicked(e -> mostrarPantallaLogin(stage));
+    userMenu.getItems().addAll(
+            new CustomMenuItem(crearBox, true),
+            new CustomMenuItem(cerrarBox, true)
+    );
 
-    userMenu.getItems().addAll(crearUsuario, cerrarSesion);
-
-    //muestra dropdownde
     userButton.setOnMouseClicked(e -> {
         if (!userMenu.isShowing()) {
             userMenu.show(userButton, Side.BOTTOM, 0, 0);
@@ -429,43 +429,53 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
         }
     });
 
-    // top
+    // ==== TOP BAR ====
     BorderPane topBar = new BorderPane();
     topBar.setLeft(logoView);
     topBar.setRight(userButton);
-    topBar.getStyleClass().add("top-bar");
     topBar.setPadding(new Insets(10, 20, 10, 20));
+    topBar.getStyleClass().add("top-bar");
 
-    // nav
-    Button btnprincipal = new Button("Menu Principal");
+    // ==== NAVBAR (MENÚ) ====
+    Button btnprincipal = new Button("Menú Principal");
     Button btncrud = new Button("CRUD");
     Button btninventario = new Button("Inventario");
     Button btnmov = new Button("Movimientos");
 
-    HBox navbar = new HBox(btnprincipal, btncrud, btninventario, btnmov);
-    navbar.setSpacing(50);
+    btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
+    btncrud.getStyleClass().add("navbar-button");
+    btninventario.getStyleClass().add("navbar-button");
+    btnmov.getStyleClass().add("navbar-button");
+
+    HBox navbar = new HBox(20, btnprincipal, btncrud, btninventario, btnmov);
     navbar.setAlignment(Pos.CENTER_LEFT);
     navbar.setPadding(new Insets(12, 20, 12, 20));
     navbar.getStyleClass().add("navbar");
 
+    // contenedor superior (logo + navbar)
     VBox topContainer = new VBox(topBar, navbar);
 
-    // panel de enmedio
-    Label lbl = new Label("Bienvenido ADMIN");
-    lbl.getStyleClass().add("subtitulo");
+    // ==== CONTENIDO CENTRAL ====
+    VBox centerContent = new VBox(20);
+    centerContent.setPadding(new Insets(30));
 
-    Label info = new Label("pepep");
-    info.getStyleClass().add("descripcion");
-    info.setWrapText(true);
+    VBox card = new VBox(10);
+    card.getStyleClass().add("card");
 
-    VBox panelCentral = new VBox(20, lbl, info);
-    panelCentral.setAlignment(Pos.CENTER);
-    panelCentral.setPadding(new Insets(40));
-    panelCentral.getStyleClass().add("panel");
+    Label lblBienvenida = new Label("Bienvenido, " + usuario.getUsuario());
+    lblBienvenida.getStyleClass().add("subtitulo");
 
+    Label lblInfo = new Label("Administra el restaurante La Oficina desde este panel.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    card.getChildren().addAll(lblBienvenida, lblInfo);
+    centerContent.getChildren().add(card);
+
+    // ==== ROOT PRINCIPAL ====
     BorderPane root = new BorderPane();
-    root.setTop(topContainer);
-    root.setCenter(panelCentral);
+    root.setTop(topContainer);      // ✅ ahora topContainer ya está declarado
+    root.setCenter(centerContent);
     root.setPadding(new Insets(20));
 
     Scene scene = new Scene(root, 1200, 800);
@@ -473,6 +483,7 @@ private void mostrarAdmin(Stage stage, Usuario usuario) {
     stage.setScene(scene);
     stage.setMaximized(true);
 }
+
 
 
 private void mostrarCaja(Stage stage, Usuario usuario) {
