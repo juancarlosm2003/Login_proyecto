@@ -109,7 +109,6 @@
     -fx-padding: 8 22 8 22;
     -fx-cursor: hand;
 }
-
 .button-primary:hover {
     -fx-background-color: #ff4160;
 }
@@ -347,4 +346,68 @@
 
 .scroll-pane .scroll-bar:horizontal {
     -fx-background-color: #1a1a1a;
+}
+/* ================================
+   DIALOGOS (Alert, TextInputDialog)
+   ================================ */
+
+.dialog-pane.dialogo-laoficina {
+    -fx-background-color: #0f1018;
+    -fx-border-color: #ff1744;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-padding: 10 14 12 14;
+}
+
+/* texto del contenido */
+.dialog-pane.dialogo-laoficina .content.label {
+    -fx-text-fill: #e2e3f0;
+    -fx-font-size: 13px;
+}
+
+/* header (título y descripción arriba) */
+.dialog-pane.dialogo-laoficina .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 10 0;
+}
+
+.dialog-pane.dialogo-laoficina .header-panel .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* botones del diálogo */
+.dialog-pane.dialogo-laoficina .button-bar .button {
+    -fx-background-radius: 999;
+    -fx-font-size: 13px;
+    -fx-padding: 6 16 6 16;
+}
+
+/* botón "Aceptar" (default) */
+.dialog-pane.dialogo-laoficina .button-bar .button:default {
+    -fx-background-color: #ff1744;
+    -fx-text-fill: white;
+}
+
+.dialog-pane.dialogo-laoficina .button-bar .button:default:hover {
+    -fx-background-color: #ff4160;
+}
+
+/* botón "Cancelar" */
+.dialog-pane.dialogo-laoficina .button-bar .button:cancel {
+    -fx-background-color: transparent;
+    -fx-border-color: #ff1744;
+    -fx-text-fill: #ff1744;
+}
+
+.dialog-pane.dialogo-laoficina .button-bar .button:cancel:hover {
+    -fx-background-color: rgba(255, 23, 68, 0.15);
+}
+
+/* quitar enfoque azul feo también aquí */
+.dialog-pane.dialogo-laoficina * {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
