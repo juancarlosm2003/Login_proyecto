@@ -3,6 +3,11 @@ package com.mycompany.proyecto_login;
 import static com.mycompany.proyecto_login.Rol.ADMIN;
 import static com.mycompany.proyecto_login.Rol.CAJA;
 import static com.mycompany.proyecto_login.Rol.OPERADOR;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javafx.collections.ListChangeListener;
+
+
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -446,19 +451,15 @@ public class Proyecto_Login extends Application {
         Button btncrud = new Button("CRUD");
         Button btninventario = new Button("Inventario");
         Button btnmov = new Button("Movimientos");
-        Button bthistorial = new Button("Historial");
-        
+        Button btnAbono = new Button("Abonos");
+ 
         btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
         btncrud.getStyleClass().add("navbar-button");
         btninventario.getStyleClass().add("navbar-button");
         btnmov.getStyleClass().add("navbar-button");
-        bthistorial.getStyleClass().add("navbar-button");
-        
-        HBox navbar = new HBox(20, 
-                btnprincipal, btncrud, 
-                btninventario, btnmov, 
-                bthistorial);
-        
+        btnAbono.getStyleClass().add("navbar-button");
+
+        HBox navbar = new HBox(20, btnprincipal, btncrud, btninventario, btnmov, btnAbono);
         navbar.setAlignment(Pos.CENTER_LEFT);
         navbar.setPadding(new Insets(12, 20, 12, 20));
         navbar.getStyleClass().add("navbar");
@@ -468,40 +469,43 @@ public class Proyecto_Login extends Application {
         // ==== CONTENEDOR CENTRAL ====
         VBox centerContent = new VBox(20);
         centerContent.setPadding(new Insets(30));
-        
+
         VBox vistaPrincipal = crearVistaAdminPrincipal(usuario);
         VBox vistaCrud = crearVistaAdminCrud();
         VBox vistaInventario = crearVistaAdminInventario();
         VBox vistaMovimientos = crearVistaAdminMovimientos();
-        VBox vistaHistorial = crearVista("Historial de Compra y Abonos", "Consulta el historial de compras y de abonos en el sistema.");
+        VBox vistaAbonos = crearVistaAbonosYCompras();
+        ScrollPane scrollAbonos = new ScrollPane(vistaAbonos);
+        scrollAbonos.setFitToWidth(true);
+        scrollAbonos.getStyleClass().add("scroll-pane");
         
         centerContent.getChildren().setAll(vistaPrincipal);
 
         // Acciones navbar
         btnprincipal.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaPrincipal);
-            actualizarSeleccionNavbar(btnprincipal, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
+            actualizarSeleccionNavbar(btnprincipal, btnprincipal, btncrud, btninventario, btnmov, btnAbono);
         });
 
         btncrud.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaCrud);
-            actualizarSeleccionNavbar(btncrud, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
+            actualizarSeleccionNavbar(btncrud, btnprincipal, btncrud, btninventario, btnmov, btnAbono);
         });
 
         btninventario.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaInventario);
-            actualizarSeleccionNavbar(btninventario, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
+            actualizarSeleccionNavbar(btninventario, btnprincipal, btncrud, btninventario, btnmov, btnAbono);
         });
 
         btnmov.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaMovimientos);
-            actualizarSeleccionNavbar(btnmov, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
+            actualizarSeleccionNavbar(btnmov, btnprincipal, btncrud, btninventario, btnmov, btnAbono);
         });
         
-        bthistorial.setOnAction(e -> {
-                centerContent.getChildren().setAll(vistaHistorial);
-                actualizarSeleccionNavbar(bthistorial, btnprincipal, btncrud, btninventario, btnmov);
-                });
+        btnAbono.setOnAction(e -> {
+            centerContent.getChildren().setAll(scrollAbonos);
+            actualizarSeleccionNavbar(btnAbono, btnprincipal, btncrud, btninventario, btnmov, btnAbono);
+        });
 
         // ==== ROOT PRINCIPAL ====
         BorderPane root = new BorderPane();
@@ -540,8 +544,7 @@ public class Proyecto_Login extends Application {
         card.getChildren().addAll(lblBienvenida, lblInfo);
         return card;
     }
-    
-    
+
     // ====== VISTA: CRUD ======
     private VBox crearVistaAdminCrud() {
         VBox card = new VBox(10);
@@ -589,23 +592,8 @@ public class Proyecto_Login extends Application {
         card.getChildren().addAll(lblTitulo, lblInfo);
         return card;
     }
+    
 
-    // ====== VISTA: COMPRA Y ABONO ======
-    private VBox crearVista(String _subtitulo, String _descripcion) {
-        VBox card = new VBox(10);
-        card.getStyleClass().add("card");
-
-        Label lblTitulo = new Label("Historial de Compra y Abonos");
-        lblTitulo.getStyleClass().add("subtitulo");
-
-        Label lblInfo = new Label("Consulta el historial de compras y de abonos en el sistema.");
-        lblInfo.getStyleClass().add("descripcion");
-        lblInfo.setWrapText(true);
-
-        card.getChildren().addAll(lblTitulo, lblInfo);
-        return card;
-    }
-   
     // -------------------------------------------------------------------------
     // CAJA
     // -------------------------------------------------------------------------
@@ -1047,6 +1035,441 @@ private VBox crearVistaOperadorCocina() {
     card.getChildren().addAll(lblTitulo, lblInfo);
     return card;
 }
+
+// ===== TABLAS DE ABONO Y COMPRAS ===========
+
+private VBox crearVistaCompras() {
+    VBox card = new VBox(15);
+    card.getStyleClass().add("card"); 
+
+    Label lblTitulo = new Label("Gestión de Compras");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    // Crear TableView
+    TableView<Compra> tablaCompras = new TableView<>();
+    tablaCompras.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+    // Columnas que coinciden con tu tabla SQL
+    TableColumn<Compra, Number> colId = new TableColumn<>("ID");
+    colId.setMaxWidth(60);
+    colId.setCellValueFactory(data -> data.getValue().idCompraProperty());
+
+    TableColumn<Compra, LocalDateTime> colFecha = new TableColumn<>("Fecha");
+    colFecha.setMinWidth(150);
+    colFecha.setCellValueFactory(data -> data.getValue().fechaProperty());
+    // Formato personalizado para fecha
+    colFecha.setCellFactory(col -> new TableCell<Compra, LocalDateTime>() {
+        @Override
+        protected void updateItem(LocalDateTime item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+            } else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                setText(item.format(formatter));
+            }
+        }
+    });
+
+    TableColumn<Compra, String> colEstado = new TableColumn<>("Estado");
+    colEstado.setMaxWidth(100);
+    colEstado.setCellValueFactory(data -> data.getValue().estadoProperty());
+
+    TableColumn<Compra, String> colMetodo = new TableColumn<>("Método Pago");
+    colMetodo.setMinWidth(120);
+    colMetodo.setCellValueFactory(data -> data.getValue().metodoPagoProperty());
+
+    TableColumn<Compra, Number> colSubtotal = new TableColumn<>("Subtotal");
+    colSubtotal.setCellValueFactory(data -> data.getValue().subtotalProperty());
+    colSubtotal.setCellFactory(col -> new TableCell<Compra, Number>() {
+        @Override
+        protected void updateItem(Number item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(empty || item == null ? null : String.format("L %.2f", item.doubleValue()));
+        }
+    });
+
+    TableColumn<Compra, Number> colImpuestos = new TableColumn<>("Impuestos");
+    colImpuestos.setCellValueFactory(data -> data.getValue().impuestosProperty());
+    colImpuestos.setCellFactory(col -> new TableCell<Compra, Number>() {
+        @Override
+        protected void updateItem(Number item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(empty || item == null ? null : String.format("L %.2f", item.doubleValue()));
+        }
+    });
+
+    TableColumn<Compra, Number> colTotal = new TableColumn<>("Total");
+    colTotal.setCellValueFactory(data -> data.getValue().totalProperty());
+    colTotal.setCellFactory(col -> new TableCell<Compra, Number>() {
+        @Override
+        protected void updateItem(Number item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(empty || item == null ? null : String.format("L %.2f", item.doubleValue()));
+        }
+    });
+
+    // Agregar todas las columnas
+    tablaCompras.getColumns().addAll(colId, colFecha, colEstado, colMetodo, 
+                                      colSubtotal, colImpuestos, colTotal);
+
+    // Datos de ejemplo (luego conectarás con tu base de datos)
+    ObservableList<Compra> datosCompras = FXCollections.observableArrayList();
+    tablaCompras.setItems(datosCompras);
+
+    // Botones de acción
+    Button btnNueva = new Button("Nueva Compra");
+    btnNueva.getStyleClass().add("button-primary");
+    
+    Button btnEditar = new Button("Editar");
+    btnEditar.getStyleClass().add("button-secondary");
+    
+    Button btnEliminar = new Button("Eliminar");
+    btnEliminar.getStyleClass().add("button-secondary");
+
+    Button btnVerAbonos = new Button("Ver Abonos");
+    btnVerAbonos.getStyleClass().add("button-secondary");
+
+    HBox acciones = new HBox(10, btnNueva, btnEditar, btnEliminar, btnVerAbonos);
+    acciones.setAlignment(Pos.CENTER_RIGHT);
+
+    // Deshabilitar botones si no hay selección
+    btnEditar.disableProperty().bind(
+        tablaCompras.getSelectionModel().selectedItemProperty().isNull()
+    );
+    btnEliminar.disableProperty().bind(
+        tablaCompras.getSelectionModel().selectedItemProperty().isNull()
+    );
+    btnVerAbonos.disableProperty().bind(
+        tablaCompras.getSelectionModel().selectedItemProperty().isNull()
+    );
+
+    card.getChildren().addAll(lblTitulo, tablaCompras, acciones);
+    return card;
+}
+
+private VBox crearVistaAbonos(int idCompra) {
+    VBox card = new VBox(15);
+    card.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Abonos de la Compra #" + idCompra);
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    // TableView para Abonos
+    TableView<Abono> tablaAbonos = new TableView<>();
+    tablaAbonos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+    TableColumn<Abono, Number> colId = new TableColumn<>("# Abono");
+    colId.setMaxWidth(80);
+    colId.setCellValueFactory(data -> data.getValue().idAbonoProperty());
+
+    TableColumn<Abono, Number> colIdCompra = new TableColumn<>("# Compra");
+    colIdCompra.setMaxWidth(80);
+    colIdCompra.setCellValueFactory(data -> data.getValue().idCompraProperty());
+
+    TableColumn<Abono, LocalDateTime> colFecha = new TableColumn<>("Fecha");
+    colFecha.setMinWidth(150);
+    colFecha.setCellValueFactory(data -> data.getValue().fechaProperty());
+    colFecha.setCellFactory(col -> new TableCell<Abono, LocalDateTime>() {
+        @Override
+        protected void updateItem(LocalDateTime item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+            } else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                setText(item.format(formatter));
+            }
+        }
+    });
+
+    TableColumn<Abono, Number> colMonto = new TableColumn<>("Monto");
+    colMonto.setMinWidth(100);
+    colMonto.setCellValueFactory(data -> data.getValue().montoProperty());
+    colMonto.setCellFactory(col -> new TableCell<Abono, Number>() {
+        @Override
+        protected void updateItem(Number item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(empty || item == null ? null : String.format("L %.2f", item.doubleValue()));
+        }
+    });
+
+    TableColumn<Abono, String> colMetodo = new TableColumn<>("Método Pago");
+    colMetodo.setMinWidth(110);
+    colMetodo.setCellValueFactory(data -> data.getValue().metodoPagoProperty());
+
+    TableColumn<Abono, String> colComentario = new TableColumn<>("Comentario");
+    colComentario.setMinWidth(200);
+    colComentario.setCellValueFactory(data -> data.getValue().comentarioProperty());
+
+    tablaAbonos.getColumns().addAll(colId, colIdCompra, colFecha, 
+                                      colMonto, colMetodo, colComentario);
+
+    ObservableList<Abono> datosAbonos = FXCollections.observableArrayList();
+    tablaAbonos.setItems(datosAbonos);
+
+    // Total de abonos
+    Label lblTotalAbonos = new Label("Total Abonado:");
+    lblTotalAbonos.getStyleClass().add("totales-label-strong");
+    
+    Label lblTotalValor = new Label("L 0.00");
+    lblTotalValor.getStyleClass().add("totales-valor-strong");
+
+    HBox boxTotal = new HBox(10, lblTotalAbonos, lblTotalValor);
+    boxTotal.setAlignment(Pos.CENTER_RIGHT);
+    boxTotal.setPadding(new Insets(10, 0, 0, 0));
+
+    // Botones
+    Button btnNuevoAbono = new Button("Nuevo Abono");
+    btnNuevoAbono.getStyleClass().add("button-primary");
+    
+    Button btnEliminar = new Button("Eliminar Abono");
+    btnEliminar.getStyleClass().add("button-secondary");
+
+    HBox acciones = new HBox(10, btnNuevoAbono, btnEliminar);
+    acciones.setAlignment(Pos.CENTER_RIGHT);
+
+    btnEliminar.disableProperty().bind(
+        tablaAbonos.getSelectionModel().selectedItemProperty().isNull()
+    );
+
+    card.getChildren().addAll(lblTitulo, tablaAbonos, boxTotal, acciones);
+    return card;
+}
+
+private VBox crearVistaAbonosYCompras() {
+    VBox contenedorPrincipal = new VBox(20);
+    contenedorPrincipal.setPadding(new Insets(0));
+
+    // ========== CARD DE INTRODUCCIÓN ==========
+    VBox cardIntro = new VBox(10);
+    cardIntro.getStyleClass().add("card");
+
+    Label lblTitulo = new Label("Historial de Compra y Abonos");
+    lblTitulo.getStyleClass().add("subtitulo");
+
+    Label lblInfo = new Label("Consulta el historial de compras y de abonos en el sistema.");
+    lblInfo.getStyleClass().add("descripcion");
+    lblInfo.setWrapText(true);
+
+    cardIntro.getChildren().addAll(lblTitulo, lblInfo);
+
+    // ========== PARTE 1: MASTER (Tabla de Compras) ==========
+    VBox cardCompras = new VBox(15);
+    cardCompras.getStyleClass().add("card");
+
+    Label lblTituloCompras = new Label("Gestión de Compras");
+    lblTituloCompras.getStyleClass().add("subtitulo");
+
+    Label lblInfoCompras = new Label("Selecciona una compra para ver sus abonos asociados");
+    lblInfoCompras.getStyleClass().add("descripcion");
+    lblInfoCompras.setWrapText(true);
+
+    // Tabla de Compras (MASTER)
+    TableView<Compra> tablaCompras = new TableView<>();
+    tablaCompras.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    tablaCompras.setPrefHeight(300);
+    tablaCompras.setMinHeight(200);
+
+    TableColumn<Compra, Number> colIdCompra = new TableColumn<>("ID");
+    colIdCompra.setMaxWidth(60);
+    colIdCompra.setCellValueFactory(data -> data.getValue().idCompraProperty());
+
+    TableColumn<Compra, String> colFecha = new TableColumn<>("Fecha");
+    colFecha.setMinWidth(150);
+    colFecha.setCellValueFactory(data -> {
+        LocalDateTime fecha = data.getValue().getFecha();
+        if (fecha != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            return new SimpleStringProperty(fecha.format(formatter));
+        }
+        return new SimpleStringProperty("");
+    });
+
+    TableColumn<Compra, String> colEstado = new TableColumn<>("Estado");
+    colEstado.setMaxWidth(150);
+    colEstado.setCellValueFactory(data -> data.getValue().estadoProperty());
+
+    TableColumn<Compra, String> colMetodo = new TableColumn<>("Método Pago");
+    colMetodo.setMinWidth(120);
+    colMetodo.setCellValueFactory(data -> data.getValue().metodoPagoProperty());
+
+    TableColumn<Compra, String> colSubtotal = new TableColumn<>("Subtotal");
+    colSubtotal.setCellValueFactory(data -> {
+        double valor = data.getValue().getSubtotal();
+        return new SimpleStringProperty(String.format("L %.2f", valor));
+    });
+
+    TableColumn<Compra, String> colImpuestos = new TableColumn<>("Impuestos");
+    colImpuestos.setCellValueFactory(data -> {
+        double valor = data.getValue().getImpuestos();
+        return new SimpleStringProperty(String.format("L %.2f", valor));
+    });
+
+    TableColumn<Compra, String> colTotal = new TableColumn<>("Total");
+    colTotal.setCellValueFactory(data -> {
+        double valor = data.getValue().getTotal();
+        return new SimpleStringProperty(String.format("L %.2f", valor));
+    });
+
+    tablaCompras.getColumns().addAll(colIdCompra, colFecha, colEstado, 
+                                      colMetodo, colSubtotal, colImpuestos, colTotal);
+
+    // Datos de ejemplo para Compras
+    ObservableList<Compra> datosCompras = FXCollections.observableArrayList();
+    datosCompras.add(new Compra(1, LocalDateTime.of(2025, 12, 5, 10, 30), "Pendiente", 
+                   "Crédito 30 días", 285.00, 42.75, 327.75));
+    datosCompras.add(new Compra(2, LocalDateTime.of(2025, 12, 4, 14, 15), "Parcialmente Pagada", 
+                   "Efectivo", 1500.00, 225.00, 1725.00));
+    datosCompras.add(new Compra(3, LocalDateTime.of(2025, 12, 3, 9, 0), "Pagada", 
+                   "Transferencia", 800.00, 120.00, 920.00));
+    
+    tablaCompras.setItems(datosCompras);
+
+    cardCompras.getChildren().addAll(lblTituloCompras, lblInfoCompras, tablaCompras);
+
+    VBox cardAbonos = new VBox(15);
+    cardAbonos.getStyleClass().add("card");
+
+    Label lblTituloAbonos = new Label("Abonos de la Compra");
+    lblTituloAbonos.getStyleClass().add("subtitulo");
+
+    Label lblInfoAbonos = new Label("Selecciona una compra arriba para ver sus abonos");
+    lblInfoAbonos.getStyleClass().add("descripcion");
+    lblInfoAbonos.setWrapText(true);
+
+    // Tabla de Abonos (DETAIL)
+    TableView<Abono> tablaAbonos = new TableView<>();
+    tablaAbonos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    tablaAbonos.setPrefHeight(250);
+    tablaAbonos.setMinHeight(200);
+    tablaAbonos.setPlaceholder(new Label("Selecciona una compra para ver sus abonos"));
+
+    TableColumn<Abono, Number> colIdAbono = new TableColumn<>("# Abono");
+    colIdAbono.setMaxWidth(80);
+    colIdAbono.setCellValueFactory(data -> data.getValue().idAbonoProperty());
+
+    TableColumn<Abono, Number> colIdCompraAbono = new TableColumn<>("# Compra");
+    colIdCompraAbono.setMaxWidth(80);
+    colIdCompraAbono.setCellValueFactory(data -> data.getValue().idCompraProperty());
+
+    TableColumn<Abono, String> colFechaAbono = new TableColumn<>("Fecha");
+    colFechaAbono.setMinWidth(150);
+    colFechaAbono.setCellValueFactory(data -> {
+        LocalDateTime fecha = data.getValue().getFecha();
+        if (fecha != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            return new SimpleStringProperty(fecha.format(formatter));
+        }
+        return new SimpleStringProperty("");
+    });
+
+    TableColumn<Abono, String> colMonto = new TableColumn<>("Monto");
+    colMonto.setMinWidth(100);
+    colMonto.setCellValueFactory(data -> {
+        double valor = data.getValue().getMonto();
+        return new SimpleStringProperty(String.format("L %.2f", valor));
+    });
+
+    TableColumn<Abono, String> colMetodoAbono = new TableColumn<>("Método Pago");
+    colMetodoAbono.setMinWidth(110);
+    colMetodoAbono.setCellValueFactory(data -> data.getValue().metodoPagoProperty());
+
+    TableColumn<Abono, String> colComentario = new TableColumn<>("Comentario");
+    colComentario.setMinWidth(200);
+    colComentario.setCellValueFactory(data -> data.getValue().comentarioProperty());
+
+    tablaAbonos.getColumns().addAll(colIdAbono, colIdCompraAbono, colFechaAbono, 
+                                      colMonto, colMetodoAbono, colComentario);
+
+    ObservableList<Abono> datosAbonos = FXCollections.observableArrayList();
+    tablaAbonos.setItems(datosAbonos);
+
+    // ========== LABELS DE TOTALES ==========
+    Label lblTotalAbonadoTexto = new Label("Total Abonado:");
+    lblTotalAbonadoTexto.getStyleClass().add("totales-label-strong");
+    
+    Label lblTotalAbonado = new Label("L 0.00");
+    lblTotalAbonado.getStyleClass().add("totales-valor-strong");
+
+    Label lblPendienteTexto = new Label("Pendiente de Pago:");
+    lblPendienteTexto.getStyleClass().add("totales-label");
+    
+    Label lblPendiente = new Label("L 0.00");
+    lblPendiente.getStyleClass().add("totales-valor");
+
+    tablaCompras.getSelectionModel().selectedItemProperty().addListener(
+        (observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                lblTituloAbonos.setText("Abonos de la Compra #" + newValue.getIdCompra());
+                lblInfoAbonos.setText("Total de la compra: L " + 
+                    String.format("%.2f", newValue.getTotal()) + 
+                    " | Estado: " + newValue.getEstado());
+                
+                datosAbonos.clear();
+                
+                if (newValue.getIdCompra() == 1) {
+                    // Compra 1: Sin abonos
+                } else if (newValue.getIdCompra() == 2) {
+                    datosAbonos.add(new Abono(1, 2, LocalDateTime.of(2025, 12, 4, 15, 0), 
+                                  500.00, "Efectivo", "Primer abono"));
+                    datosAbonos.add(new Abono(2, 2, LocalDateTime.of(2025, 12, 5, 10, 0), 
+                                  300.00, "Efectivo", "Segundo abono"));
+                } else if (newValue.getIdCompra() == 3) {
+                    datosAbonos.add(new Abono(3, 3, LocalDateTime.of(2025, 12, 3, 11, 30), 
+                                  920.00, "Transferencia", "Pago total"));
+                }
+                
+                double totalAbonado = datosAbonos.stream()
+                    .mapToDouble(Abono::getMonto)
+                    .sum();
+                double pendiente = newValue.getTotal() - totalAbonado;
+                
+                lblTotalAbonado.setText(String.format("L %.2f", totalAbonado));
+                lblPendiente.setText(String.format("L %.2f", pendiente));
+                
+            } else {
+                lblTituloAbonos.setText("Abonos de la Compra");
+                lblInfoAbonos.setText("Selecciona una compra arriba para ver sus abonos");
+                datosAbonos.clear();
+                lblTotalAbonado.setText("L 0.00");
+                lblPendiente.setText("L 0.00");
+            }
+        }
+    );
+
+    datosAbonos.addListener((ListChangeListener<Abono>) change -> {
+        Compra compraSeleccionada = tablaCompras.getSelectionModel().getSelectedItem();
+        if (compraSeleccionada != null) {
+            double totalAbonado = datosAbonos.stream()
+                .mapToDouble(Abono::getMonto)
+                .sum();
+            double pendiente = compraSeleccionada.getTotal() - totalAbonado;
+            
+            lblTotalAbonado.setText(String.format("L %.2f", totalAbonado));
+            lblPendiente.setText(String.format("L %.2f", pendiente));
+        }
+    });
+
+    // ========== GRID DE TOTALES ==========
+    GridPane boxTotales = new GridPane();
+    boxTotales.getStyleClass().add("totales-box");
+    boxTotales.setHgap(10);
+    boxTotales.setVgap(4);
+    boxTotales.add(lblTotalAbonadoTexto, 0, 0);
+    boxTotales.add(lblTotalAbonado, 1, 0);
+    boxTotales.add(lblPendienteTexto, 0, 1);
+    boxTotales.add(lblPendiente, 1, 1);
+
+    cardAbonos.getChildren().addAll(lblTituloAbonos, lblInfoAbonos, 
+                                     tablaAbonos, boxTotales);
+
+    contenedorPrincipal.getChildren().addAll(cardIntro, cardCompras, cardAbonos);
+    
+    return contenedorPrincipal;
+}
+
+
     // -------------------------------------------------------------------------
     // MAIN
     // -------------------------------------------------------------------------
