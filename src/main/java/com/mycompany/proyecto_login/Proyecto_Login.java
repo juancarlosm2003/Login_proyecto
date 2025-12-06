@@ -446,13 +446,19 @@ public class Proyecto_Login extends Application {
         Button btncrud = new Button("CRUD");
         Button btninventario = new Button("Inventario");
         Button btnmov = new Button("Movimientos");
-
+        Button bthistorial = new Button("Historial");
+        
         btnprincipal.getStyleClass().addAll("navbar-button", "navbar-button-selected");
         btncrud.getStyleClass().add("navbar-button");
         btninventario.getStyleClass().add("navbar-button");
         btnmov.getStyleClass().add("navbar-button");
-
-        HBox navbar = new HBox(20, btnprincipal, btncrud, btninventario, btnmov);
+        bthistorial.getStyleClass().add("navbar-button");
+        
+        HBox navbar = new HBox(20, 
+                btnprincipal, btncrud, 
+                btninventario, btnmov, 
+                bthistorial);
+        
         navbar.setAlignment(Pos.CENTER_LEFT);
         navbar.setPadding(new Insets(12, 20, 12, 20));
         navbar.getStyleClass().add("navbar");
@@ -462,34 +468,40 @@ public class Proyecto_Login extends Application {
         // ==== CONTENEDOR CENTRAL ====
         VBox centerContent = new VBox(20);
         centerContent.setPadding(new Insets(30));
-
+        
         VBox vistaPrincipal = crearVistaAdminPrincipal(usuario);
         VBox vistaCrud = crearVistaAdminCrud();
         VBox vistaInventario = crearVistaAdminInventario();
         VBox vistaMovimientos = crearVistaAdminMovimientos();
-
+        VBox vistaHistorial = crearVista("Historial de Compra y Abonos", "Consulta el historial de compras y de abonos en el sistema.");
+        
         centerContent.getChildren().setAll(vistaPrincipal);
 
         // Acciones navbar
         btnprincipal.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaPrincipal);
-            actualizarSeleccionNavbar(btnprincipal, btnprincipal, btncrud, btninventario, btnmov);
+            actualizarSeleccionNavbar(btnprincipal, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
         });
 
         btncrud.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaCrud);
-            actualizarSeleccionNavbar(btncrud, btnprincipal, btncrud, btninventario, btnmov);
+            actualizarSeleccionNavbar(btncrud, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
         });
 
         btninventario.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaInventario);
-            actualizarSeleccionNavbar(btninventario, btnprincipal, btncrud, btninventario, btnmov);
+            actualizarSeleccionNavbar(btninventario, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
         });
 
         btnmov.setOnAction(e -> {
             centerContent.getChildren().setAll(vistaMovimientos);
-            actualizarSeleccionNavbar(btnmov, btnprincipal, btncrud, btninventario, btnmov);
+            actualizarSeleccionNavbar(btnmov, btnprincipal, btncrud, btninventario, btnmov, bthistorial);
         });
+        
+        bthistorial.setOnAction(e -> {
+                centerContent.getChildren().setAll(vistaHistorial);
+                actualizarSeleccionNavbar(bthistorial, btnprincipal, btncrud, btninventario, btnmov);
+                });
 
         // ==== ROOT PRINCIPAL ====
         BorderPane root = new BorderPane();
@@ -528,7 +540,8 @@ public class Proyecto_Login extends Application {
         card.getChildren().addAll(lblBienvenida, lblInfo);
         return card;
     }
-
+    
+    
     // ====== VISTA: CRUD ======
     private VBox crearVistaAdminCrud() {
         VBox card = new VBox(10);
@@ -577,6 +590,22 @@ public class Proyecto_Login extends Application {
         return card;
     }
 
+    // ====== VISTA: COMPRA Y ABONO ======
+    private VBox crearVista(String _subtitulo, String _descripcion) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("card");
+
+        Label lblTitulo = new Label("Historial de Compra y Abonos");
+        lblTitulo.getStyleClass().add("subtitulo");
+
+        Label lblInfo = new Label("Consulta el historial de compras y de abonos en el sistema.");
+        lblInfo.getStyleClass().add("descripcion");
+        lblInfo.setWrapText(true);
+
+        card.getChildren().addAll(lblTitulo, lblInfo);
+        return card;
+    }
+   
     // -------------------------------------------------------------------------
     // CAJA
     // -------------------------------------------------------------------------
